@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      //  home: const details.UserDetailsScreen(),
-      // home: const register.SignUpScreen(), // Start with UserDetailsScreen
-      home: const profile.ProfileScreen(),
+       home: const details.UserDetailsScreen(),
+       //home: const register.SignUpScreen(), // Start with UserDetailsScreen
+      //home: const profile.ProfileScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

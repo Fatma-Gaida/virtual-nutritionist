@@ -17,20 +17,12 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   int? _weight;
   String? _weightUnit;
   String? _gender;
-  String? _region;
   String? _activityLevel;
   String? _mainGoal;
   List<String> _maladies = [];
   List<String> _allergies = [];
 
-  // Defined lists
-  final List<String> _regions = [
-    'Sousse',
-    'Monastir',
-    'Mahdia',
-    'Tunis',
-    'Bizert',
-  ];
+  
 
   final List<String> _activityLevels = [
     'Sedentary (little or no exercise)',
@@ -95,7 +87,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   bool _validatePhase1() {
     return _gender != null &&
         _birthday != null &&
-        _region != null &&
         _height != null &&
         _weight != null &&
         _weightUnit != null;
@@ -143,7 +134,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      print('Form completed: $_gender, $_birthday, $_region, $_height, '
+      print('Form completed: $_gender, $_birthday, $_height, '
           '$_weight, $_activityLevel, $_maladies, $_allergies, $_mainGoal');
     }
   }
@@ -191,9 +182,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             ongenderChanged: (value) => setState(() => _gender = value),
             birthday: _birthday,
             onBirthdayChanged: _selectDate,
-            region: _region,
-            onRegionChanged: (value) => setState(() => _region = value),
-            regions: _regions,
             height: _height,
             onHeightChanged: (value) => setState(() => _height = value),
             weight: _weight,
@@ -234,9 +222,6 @@ class _Phase1 extends StatelessWidget {
   final ValueChanged<String> ongenderChanged;
   final DateTime? birthday;
   final Function(BuildContext) onBirthdayChanged;
-  final String? region;
-  final ValueChanged<String?> onRegionChanged;
-  final List<String> regions;
   final double? height;
   final ValueChanged<double> onHeightChanged;
   final int? weight;
@@ -250,9 +235,6 @@ class _Phase1 extends StatelessWidget {
     required this.ongenderChanged,
     required this.birthday,
     required this.onBirthdayChanged,
-    required this.region,
-    required this.onRegionChanged,
-    required this.regions,
     required this.height,
     required this.onHeightChanged,
     required this.weight,
@@ -348,25 +330,7 @@ class _Phase1 extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              const Text('Region of Living', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: region,
-                hint: const Text('Select region'),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                items: regions.map((String region) {
-                  return DropdownMenuItem<String>(value: region, child: Text(region));
-                }).toList(),
-                onChanged: onRegionChanged,
-              ),
+              
               const SizedBox(height: 24),
               const Text('Height', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),

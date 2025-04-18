@@ -10,7 +10,6 @@ import java.util.List;
 @Document(collection = "user")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class User {
     @Id
     private String idU;

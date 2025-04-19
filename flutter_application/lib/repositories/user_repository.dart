@@ -12,7 +12,7 @@ class UserRepository {
       final response = await apiService.post('/users/creer-compte', user.toJson());
       return User.fromJson(response.data);
     } catch (e) {
-      if (e is DioError) {
+      if (e is DioException) {  // Updated from DioError to DioException
         throw Exception('Failed to create user: ${e.response?.data ?? e.message}');
       }
       throw Exception('Failed to create user: $e');
@@ -24,7 +24,7 @@ class UserRepository {
       final response = await apiService.get('/users/$id');
       return User.fromJson(response.data);
     } catch (e) {
-      if (e is DioError) {
+      if (e is DioException) {  // Updated from DioError to DioException
         if (e.response?.statusCode == 404) {
           throw Exception('User not found');
         } else if (e.response?.statusCode == 400) {

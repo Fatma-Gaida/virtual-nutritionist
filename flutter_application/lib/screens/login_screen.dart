@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  print('Starting application...');
+  //print('Starting application...');
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  //const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    print('Building MyApp');
+    //print('Building MyApp');
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: const LoginScreen(), // Set LoginScreen as home directly
@@ -19,11 +19,12 @@ class MyApp extends StatelessWidget {
 }
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  //const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    print('Building LoginScreen widget');
+    //print('Building LoginScreen widget');
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -87,7 +88,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-                  print('Login button pressed');
+                  //print('Login button pressed');
                   // Add login functionality here
                 },
                 style: ElevatedButton.styleFrom(
@@ -111,7 +112,7 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      print('Forgot Password button pressed');
+                      //print('Forgot Password button pressed');
                       // Add forgot password functionality
                     },
                     child: Text(
@@ -143,11 +144,11 @@ class LoginScreen extends StatelessWidget {
 }
 
 class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
-
+  //const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    print('Building SignUpScreen widget');
+    //print('Building SignUpScreen widget');
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -224,7 +225,7 @@ class SignUpScreen extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-                  print('Sign Up button pressed');
+                  //print('Sign Up button pressed');
                   // Add sign up functionality here
                 },
                 style: ElevatedButton.styleFrom(
@@ -252,12 +253,12 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      print('Login button pressed - Attempting navigation back to Login');
+                      //print('Login button pressed - Attempting navigation back to Login');
                       try {
                         Navigator.pop(context);
-                        print('Navigation back to Login successful');
+                        //print('Navigation back to Login successful');
                       } catch (e) {
-                        print('Navigation error: $e');
+                        //print('Navigation error: $e');
                       }
                     },
                     child: Text(

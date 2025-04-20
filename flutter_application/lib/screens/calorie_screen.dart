@@ -1,4 +1,7 @@
+// ignore_for_file: unused_element
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application/models/meal_model.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../models/calorie_model.dart';
 import '../repositories/Calories_repository.dart';
@@ -18,6 +21,13 @@ class _CalorieScreenState extends State<CalorieScreen> {
   void initState() {
     super.initState();
     _calorieDataFuture = _repository.getTodayCalorieData();
+  }
+
+  // Refresh data after adding a new meal
+  void _refreshData() {
+    setState(() {
+      _calorieDataFuture = _repository.getTodayCalorieData();
+    });
   }
 
   @override
@@ -146,28 +156,37 @@ class _CalorieScreenState extends State<CalorieScreen> {
             ),
             SizedBox(height: 20),
             Row(
+              /*
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNutrientIndicator(
                   'Carbohydrates',
                   data.macros.carbohydratesPercentage,
                   '${data.macros.carbohydrates}g/${data.macros.carbohydratesTarget}g',
-                  0.46,
+                  data.macros.carbohydratesPercentage > 1.0
+                      ? 1.0
+                      : data.macros.carbohydratesPercentage,
                 ),
                 _buildNutrientIndicator(
                   'Protein',
                   data.macros.proteinPercentage,
                   '${data.macros.protein}g/${data.macros.proteinTarget}g',
-                  0.74,
+                  data.macros.proteinPercentage > 1.0
+                      ? 1.0
+                      : data.macros.proteinPercentage,
                 ),
                 _buildNutrientIndicator(
                   'Fat',
                   data.macros.fatPercentage,
                   '${data.macros.fat}g/${data.macros.fatTarget}g',
-                  0.14,
+                  data.macros.fatPercentage > 1.0
+                      ? 1.0
+                      : data.macros.fatPercentage,
                 ),
               ],
+              */
             ),
+            
           ],
         ),
       ),
@@ -220,53 +239,82 @@ class _CalorieScreenState extends State<CalorieScreen> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Navigate to the recipes screen when "All" is clicked
+                  Navigator.pushNamed(context, '/recipes').then((_) {
+                    // Refresh data when returning from recipes screen
+                    _refreshData();
+                  });
+                },
                 child: Text('All'),
                 style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
               ),
             ],
           ),
         ),
-        ...data.meals.map((meal) => _buildMealItem(meal)).toList(),
+        ...data.meals.map((meal) => _buildMealItem(meal))/*.toList()*/,
       ],
     );
   }
 
   Widget _buildMealItem(Meal meal) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade300, width: 1),
-        ),
+    return Dismissible(
+      key: Key(meal.id),
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.only(right: 20),
+        child: Icon(Icons.delete, color: Colors.white),
       ),
-      child: ListTile(
-        leading: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.grey[200],
+      direction: DismissDirection.endToStart,
+      onDismissed: (direction) {
+        // Remove meal when swiped
+        _repository.removeMeal(meal.id).then((_) => _refreshData());
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.grey.shade300, width: 1),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              meal.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(Icons.fastfood, size: 24, color: Colors.amber);
-              },
+        ),
+        child: ListTile(
+          leading: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey[200],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                meal.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.fastfood, size: 24, color: Colors.amber);
+                },
+              ),
             ),
           ),
+          title: Text(meal.name, style: TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Row(
+            children: [
+              Text(meal.type, style: TextStyle(color: Colors.grey[600])),
+              SizedBox(width: 10),
+              Text(
+                '${meal.calories} Kcal',
+                style: TextStyle(
+                  color: Colors.amber,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          trailing: Icon(Icons.chevron_right),
+          onTap: () {
+            // Navigate to meal details if needed
+          },
         ),
-        title: Text(meal.type, style: TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(
-          '${meal.calories} Kcal',
-          style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold),
-        ),
-        trailing: Icon(Icons.chevron_right),
-        onTap: () {
-          // Navigate to meal details
-        },
       ),
     );
   }
@@ -294,6 +342,12 @@ class _CalorieScreenState extends State<CalorieScreen> {
         ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
+      onTap: (index) {
+        if (index == 1) {
+          // Refresh data when tapping on Calories tab
+          _refreshData();
+        }
+      },
     );
   }
 }

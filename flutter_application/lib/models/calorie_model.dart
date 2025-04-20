@@ -1,51 +1,51 @@
-class Meal {
-  final String type;
-  final int calories;
-  final String imageUrl;
-
-  Meal({required this.type, required this.calories, required this.imageUrl});
-}
-
-class MacroNutrients {
-  final int carbohydrates;
-  final int protein;
-  final int fat;
-
-  // Target values
-  final int carbohydratesTarget;
-  final int proteinTarget;
-  final int fatTarget;
-
-  MacroNutrients({
-    required this.carbohydrates,
-    required this.protein,
-    required this.fat,
-    required this.carbohydratesTarget,
-    required this.proteinTarget,
-    required this.fatTarget,
-  });
-
-  double get carbohydratesPercentage => carbohydrates / carbohydratesTarget;
-  double get proteinPercentage => protein / proteinTarget;
-  double get fatPercentage => fat / fatTarget;
-}
+import 'meal_model.dart';
 
 class CalorieData {
   final String username;
   final String date;
   final int totalCalories;
   final int calorieGoal;
-  final MacroNutrients macros;
+  final double caloriePercentage;
   final List<Meal> meals;
+  // Removed macros as you mentioned they're not being used for now
 
   CalorieData({
     required this.username,
     required this.date,
     required this.totalCalories,
     required this.calorieGoal,
-    required this.macros,
+    required this.caloriePercentage,
     required this.meals,
   });
 
-  double get caloriePercentage => totalCalories / calorieGoal;
+  // Factory constructor to create a CalorieData from a map (for JSON parsing)
+  factory CalorieData.fromMap(Map<String, dynamic> map) {
+    List<Meal> mealsList = [];
+    if (map['meals'] != null) {
+      mealsList =
+          (map['meals'] as List).map((item) => Meal.fromMap(item)).toList();
+    }
+
+    return CalorieData(
+      username: map['username'] ?? '',
+      date: map['date'] ?? '',
+      totalCalories: map['totalCalories'] ?? 0,
+      calorieGoal: map['calorieGoal'] ?? 2000,
+      caloriePercentage:
+          (map['totalCalories'] ?? 0) / (map['calorieGoal'] ?? 2000),
+      meals: mealsList,
+    );
+  }
+
+  // Convert to map for sending to API
+  Map<String, dynamic> toMap() {
+    return {
+      'username': username,
+      'date': date,
+      'totalCalories': totalCalories,
+      'calorieGoal': calorieGoal,
+      'caloriePercentage': caloriePercentage,
+      'meals': meals.map((meal) => meal.toMap()).toList(),
+    };
+  }
 }

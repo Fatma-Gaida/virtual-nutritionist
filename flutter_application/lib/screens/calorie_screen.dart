@@ -1,10 +1,11 @@
-// ignore_for_file: unused_element
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application/models/meal_model.dart';
+import 'package:flutter_application/screens/profil_screen.dart';
+import 'package:flutter_application/screens/recipe_screen.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../models/calorie_model.dart';
 import '../repositories/Calories_repository.dart';
+
 
 class CalorieScreen extends StatefulWidget {
   const CalorieScreen({super.key});
@@ -156,72 +157,11 @@ class _CalorieScreenState extends State<CalorieScreen> {
             ),
             SizedBox(height: 20),
             Row(
-              /*
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNutrientIndicator(
-                  'Carbohydrates',
-                  data.macros.carbohydratesPercentage,
-                  '${data.macros.carbohydrates}g/${data.macros.carbohydratesTarget}g',
-                  data.macros.carbohydratesPercentage > 1.0
-                      ? 1.0
-                      : data.macros.carbohydratesPercentage,
-                ),
-                _buildNutrientIndicator(
-                  'Protein',
-                  data.macros.proteinPercentage,
-                  '${data.macros.protein}g/${data.macros.proteinTarget}g',
-                  data.macros.proteinPercentage > 1.0
-                      ? 1.0
-                      : data.macros.proteinPercentage,
-                ),
-                _buildNutrientIndicator(
-                  'Fat',
-                  data.macros.fatPercentage,
-                  '${data.macros.fat}g/${data.macros.fatTarget}g',
-                  data.macros.fatPercentage > 1.0
-                      ? 1.0
-                      : data.macros.fatPercentage,
-                ),
-              ],
-              */
+              // Keeping this row for future implementation
             ),
-            
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildNutrientIndicator(
-    String label,
-    double percent,
-    String text,
-    double displayPercent,
-  ) {
-    return Column(
-      children: [
-        CircularPercentIndicator(
-          radius: 30.0,
-          lineWidth: 5.0,
-          percent: displayPercent,
-          center: Text(
-            '${(displayPercent * 100).toInt()}%',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12.0,
-              color: Colors.white,
-            ),
-          ),
-          progressColor: Colors.amber,
-          backgroundColor: Colors.green.withOpacity(0.3),
-          circularStrokeCap: CircularStrokeCap.round,
-        ),
-        SizedBox(height: 8),
-        Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
-        SizedBox(height: 4),
-        Text(text, style: TextStyle(color: Colors.green[300], fontSize: 10)),
-      ],
     );
   }
 
@@ -241,7 +181,10 @@ class _CalorieScreenState extends State<CalorieScreen> {
               TextButton(
                 onPressed: () {
                   // Navigate to the recipes screen when "All" is clicked
-                  Navigator.pushNamed(context, '/recipes').then((_) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RecipesScreen()),
+                  ).then((_) {
                     // Refresh data when returning from recipes screen
                     _refreshData();
                   });
@@ -252,7 +195,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
             ],
           ),
         ),
-        ...data.meals.map((meal) => _buildMealItem(meal))/*.toList()*/,
+        ...data.meals.map((meal) => _buildMealItem(meal)).toList(),
       ],
     );
   }
@@ -346,6 +289,12 @@ class _CalorieScreenState extends State<CalorieScreen> {
         if (index == 1) {
           // Refresh data when tapping on Calories tab
           _refreshData();
+        } else if (index == 4) {
+          // Navigate to Profile screen when tapping on Profile tab
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
         }
       },
     );

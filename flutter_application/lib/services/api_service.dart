@@ -1,5 +1,3 @@
-// ignore: unused_import
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
@@ -7,10 +5,7 @@ import 'package:dio/dio.dart';
 class ApiService {
   late final Dio _dio;
 
-  
-
   ApiService() {
-
     // Choose the appropriate URL based on platform
     String baseUrl;
     if (kIsWeb) {
@@ -24,15 +19,16 @@ class ApiService {
       baseUrl = 'http://localhost:8080/api';
     }
 
-
-
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://10.0.2.2:8080/api', // For Android emulator
-        // Use http://localhost:8080/api for iOS simulator
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 15),
         receiveTimeout: const Duration(seconds: 15),
         contentType: 'application/json',
+        validateStatus: (status) {
+          // Accept all status codes so we can handle them manually
+          return true;
+        },
       ),
     );
 
@@ -60,6 +56,7 @@ class ApiService {
 
   Future<Response> post(String path, dynamic data) async {
     try {
+      debugPrint('POST request to $path with data: $data');
       return await _dio.post(path, data: data);
     } catch (e) {
       _handleError(e);
@@ -72,6 +69,7 @@ class ApiService {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
+      debugPrint('GET request to $path with params: $queryParameters');
       return await _dio.get(path, queryParameters: queryParameters);
     } catch (e) {
       _handleError(e);
@@ -101,6 +99,7 @@ class ApiService {
     if (error is DioException) {
       debugPrint('DioError: ${error.message}');
       if (error.response != null) {
+        debugPrint('Error Status: ${error.response?.statusCode}');
         debugPrint('Error Response: ${error.response?.data}');
       }
     } else {

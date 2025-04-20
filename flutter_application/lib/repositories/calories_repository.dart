@@ -1,22 +1,26 @@
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/calorie_model.dart';
 import '../models/meal_model.dart';
-import '../services/api_service.dart'; // Import your ApiService
+import '../services/api_service.dart';
 
 class CalorieRepository {
   final ApiService _apiService = ApiService();
   final uuid = Uuid();
 
   // Get today's user's calorie data
-  /*
   Future<CalorieData> getTodayCalorieData() async {
     try {
       // Get current user ID
       final userId = await _getCurrentUserId();
 
+      // Log the user ID to verify it's correct
+      print('Fetching calorie data for user: $userId');
+
       // Call the API through your service
-      final response = await _apiService.get('/calories/today/$userId');
+      // Make sure this endpoint matches your backend controller
+      final response = await _apiService.get('/users/$userId/daily-plan');
 
       // Parse the response
       if (response.statusCode == 200) {
@@ -25,53 +29,45 @@ class CalorieRepository {
         // If not found, create new calorie data for today
         return await _createNewCalorieData(userId);
       } else {
-        throw Exception('Failed to load calorie data');
+        throw Exception('Failed to load calorie data: ${response.statusCode}');
       }
     } catch (e) {
       print('Error getting calorie data: $e');
-      throw Exception('Failed to load calorie data');
-    }
-  }
-  */
-  Future<CalorieData> getTodayCalorieData() async {
-    try {
-      // Get current user ID
-      //final userId = '6802a37e4ca8dd672d737e72';
-      final userId =await _getCurrentUserId();
 
-      // Call the API through your service
-      final response = await _apiService.get('/calories/today/$userId');
-
-      // Parse the response
-      if (response.statusCode == 200) {
-        return CalorieData.fromMap(response.data);
-      } else if (response.statusCode == 404) {
-        // If not found, create new calorie data for today
-        return await _createNewCalorieData(userId);
-      } else {
-        throw Exception('Failed to load calorie data');
+      // Check if the error is due to the user not being logged in
+      if (e.toString().contains('User not logged in')) {
+        print('User is not logged in, returning default data');
+        // Return default data only if user is not logged in
+        return CalorieData(
+          username: 'Guest',
+          date: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+          totalCalories: 0,
+          calorieGoal: 2000,
+          caloriePercentage: 0.0,
+          meals: [],
+        );
       }
-    } catch (e) {
-      print('Error getting calorie data: $e');
-      // Return a default CalorieData object for demonstration
-      return CalorieData(
-        username: 'User',
-        date: 'Today',
-        totalCalories: 0,
-        calorieGoal: 2000,
-        caloriePercentage: 0.0,
-        meals: [],
-      );
+
+      // Rethrow other errors to help with debugging
+      throw Exception('Failed to load calorie data: $e');
     }
   }
+
   // Create new calorie data for today
   Future<CalorieData> _createNewCalorieData(String userId) async {
     try {
       // Get user profile to get calorie goal and username
       final response = await _apiService.get('/users/$userId');
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to get user data: ${response.statusCode}');
+      }
+
       final userData = response.data;
 
-      final username = userData['name'] ?? 'User';
+      final username =
+          userData['nom'] ??
+          'User'; // Changed from 'name' to 'nom' to match User model
       final calorieGoal = userData['calorieGoal'] ?? 2000;
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
@@ -86,12 +82,12 @@ class CalorieRepository {
       );
 
       // Save to backend
-      await _apiService.post('/calories/create/$userId', calorieData.toMap());
+      await _apiService.post('/users/$userId/daily-plan', calorieData.toMap());
 
       return calorieData;
     } catch (e) {
       print('Error creating calorie data: $e');
-      throw Exception('Failed to create new calorie data');
+      throw Exception('Failed to create new calorie data: $e');
     }
   }
 
@@ -104,7 +100,7 @@ class CalorieRepository {
   }) async {
     try {
       final userId = await _getCurrentUserId();
-      //final userId = '6802a37e4ca8dd672d737e72';
+
       // Create new meal
       final meal = Meal(
         id: uuid.v4(),
@@ -116,10 +112,10 @@ class CalorieRepository {
       );
 
       // Send to backend API
-      await _apiService.post('/calories/meals/$userId', meal.toMap());
+      await _apiService.post('/users/$userId/daily-plan/meals', meal.toMap());
     } catch (e) {
       print('Error adding meal: $e');
-      throw Exception('Failed to add meal');
+      throw Exception('Failed to add meal: $e');
     }
   }
 
@@ -129,17 +125,21 @@ class CalorieRepository {
       final userId = await _getCurrentUserId();
       final dateStr = DateFormat('yyyy-MM-dd').format(date);
 
-      final response = await _apiService.get('/calories/$userId/date/$dateStr');
+      final response = await _apiService.get(
+        '/users/$userId/daily-plan?date=$dateStr',
+      );
 
       if (response.statusCode == 200) {
         return CalorieData.fromMap(response.data);
-      } else {
+      } else if (response.statusCode == 404) {
         // Create new data if not found
         return await _createNewCalorieData(userId);
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
       }
     } catch (e) {
       print('Error getting calorie data for date: $e');
-      throw Exception('Failed to load calorie data');
+      throw Exception('Failed to load calorie data: $e');
     }
   }
 
@@ -147,20 +147,23 @@ class CalorieRepository {
   Future<void> removeMeal(String mealId) async {
     try {
       final userId = await _getCurrentUserId();
-      //final userId = '6802a37e4ca8dd672d737e72';
-      await _apiService.post('/calories/meals/$userId/remove', {
-        'mealId': mealId,
-      });
+
+      await _apiService.delete('/users/$userId/daily-plan/meals/$mealId');
     } catch (e) {
       print('Error removing meal: $e');
-      throw Exception('Failed to remove meal');
+      throw Exception('Failed to remove meal: $e');
     }
   }
 
   // Helper method to get current user ID
   Future<String> _getCurrentUserId() async {
-    // Replace with your authentication implementation
-    // For demo purposes, return a hardcoded ID
-    return 'current_user_id';
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id');
+
+    if (userId == null || userId.isEmpty) {
+      throw Exception('User not logged in');
+    }
+
+    return userId;
   }
 }

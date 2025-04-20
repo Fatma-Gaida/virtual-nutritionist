@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       //home: const calorie.CalorieScreen(),
       //home: const register.SignUpScreen(), // Start with UserDetailsScreen
       //home: const profile.ProfileScreen(),
-      home: const water.WaterTrackerScreen(), 
+      home: const water.WaterTrackerScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,9 +1,11 @@
 package com.example.pfa2.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.pfa2.models.PlatsConsommes;
+import com.example.pfa2.models.PlatsFavoris;
 import com.example.pfa2.models.Recipe;
 import com.example.pfa2.services.RecipeService;
 
@@ -78,5 +82,71 @@ public class RecipeController {
     public ResponseEntity<List<Recipe>> getRecipesByMaxCalories(@PathVariable int maxCalories) {
         List<Recipe> recipes = recipeService.getRecipesByMaxCalories(maxCalories);
         return new ResponseEntity<>(recipes, HttpStatus.OK);
+    }
+
+    // Recuperer tous les plats favoris d'un utilisateur specifique
+    @GetMapping("/favorites/{userId}")
+    public ResponseEntity<List<PlatsFavoris>> getFavoriteRecipes(@PathVariable String userId) {
+        List<PlatsFavoris> favorites = recipeService.getFavoriteRecipes(userId);
+        return new ResponseEntity<>(favorites, HttpStatus.OK);
+    }
+    
+    //ajouter un plat favoris
+    @PostMapping("/favorites/{userId}/{recipeId}")
+    public ResponseEntity<PlatsFavoris> addFavoriteRecipe(
+            @PathVariable String userId, 
+            @PathVariable String recipeId) {
+        PlatsFavoris platsFavoris = recipeService.addFavoriteRecipe(userId, recipeId);
+        if (platsFavoris != null) {
+            return new ResponseEntity<>(platsFavoris, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    
+    //supprimer un plat favoris
+    @DeleteMapping("/favorites/{userId}/{recipeId}")
+    public ResponseEntity<Void> removeFavoriteRecipe(
+            @PathVariable String userId, 
+            @PathVariable String recipeId) {
+        recipeService.removeFavoriteRecipe(userId, recipeId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    
+    // recuperer tous les plats consommes
+    @GetMapping("/consumed/{userId}")
+    public ResponseEntity<List<PlatsConsommes>> getConsumedRecipes(@PathVariable String userId) {
+        List<PlatsConsommes> consumed = recipeService.getConsumedRecipes(userId);
+        return new ResponseEntity<>(consumed, HttpStatus.OK);
+    }
+    
+    //recuperer les plats consommes pour date specifique
+    @GetMapping("/consumed/{userId}/date/{date}")
+    public ResponseEntity<List<PlatsConsommes>> getConsumedRecipesByDate(
+            @PathVariable String userId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<PlatsConsommes> consumed = recipeService.getConsumedRecipesByDate(userId, date);
+        return new ResponseEntity<>(consumed, HttpStatus.OK);
+    }
+    
+    //confirmer la consommation d'un plat
+    @PostMapping("/consumed/{userId}/{recipeId}")
+    public ResponseEntity<PlatsConsommes> addConsumedRecipe(
+            @PathVariable String userId,
+            @PathVariable String recipeId,
+            @RequestParam String repas) {
+        PlatsConsommes platsConsommes = recipeService.addConsumedRecipe(userId, recipeId, repas);
+        if (platsConsommes != null) {
+            return new ResponseEntity<>(platsConsommes, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    
+    //recuperer le total dee caloris consommes par date 
+    @GetMapping("/consumed/{userId}/calories/{date}")
+    public ResponseEntity<Integer> getTotalCaloriesConsumedByDate(
+            @PathVariable String userId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        int totalCalories = recipeService.getTotalCaloriesConsumedByDate(userId, date);
+        return new ResponseEntity<>(totalCalories, HttpStatus.OK);
     }
 }

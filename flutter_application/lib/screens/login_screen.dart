@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'calorie_screen.dart'; // Make sure this import is correct for your project structure
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
+import 'calorie_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,7 +13,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -21,8 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    if (_isLoading) return;
-
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -33,32 +32,43 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    // Use UserProvider for login
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
-      // Simulate API call delay
-      await Future.delayed(const Duration(seconds: 2));
+      final success = await userProvider.login(email, password);
 
-      // Replace with actual authentication logic:
-      // await AuthService.login(email, password);
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const CalorieScreen()),
-      );
+      if (success && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CalorieScreen()),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login failed: ${e.toString()}')));
-    } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        // Extract the message from the exception
+        final errorMessage =
+            e.toString().contains('Exception:')
+                ? e.toString().split('Exception:')[1].trim()
+                : e.toString();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red[700],
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 4),
+          ),
+        );
       }
     }
   }
 
-  @override
+  // Keep the rest of your LoginScreen as it is...
+   @override
   Widget build(BuildContext context) {
+    bool _isLoading = false;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -174,13 +184,16 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
 }
+
+
+
 class SignUpScreen extends StatelessWidget {
-  //const SignUpScreen({Key? key}) : super(key: key);
   const SignUpScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    //print('Building SignUpScreen widget');
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -190,11 +203,7 @@ class SignUpScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(
-                Icons.local_dining,
-                size: 80,
-                color: Colors.green[700],
-              ),
+              Icon(Icons.local_dining, size: 80, color: Colors.green[700]),
               const SizedBox(height: 16),
               Text(
                 'Create Your Account',
@@ -209,10 +218,7 @@ class SignUpScreen extends StatelessWidget {
               Text(
                 'Join your personal health companion',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.green[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.green[600]),
               ),
               const SizedBox(height: 48),
               TextField(
@@ -257,7 +263,6 @@ class SignUpScreen extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
-                  //print('Sign Up button pressed');
                   // Add sign up functionality here
                 },
                 style: ElevatedButton.styleFrom(
@@ -269,10 +274,7 @@ class SignUpScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Sign Up',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
               const SizedBox(height: 16),
@@ -285,13 +287,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      //print('Login button pressed - Attempting navigation back to Login');
-                      try {
-                        Navigator.pop(context);
-                        //print('Navigation back to Login successful');
-                      } catch (e) {
-                        //print('Navigation error: $e');
-                      }
+                      Navigator.pop(context);
                     },
                     child: Text(
                       'Login',

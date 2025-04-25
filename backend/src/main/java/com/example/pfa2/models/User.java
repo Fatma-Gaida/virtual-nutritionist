@@ -1,5 +1,7 @@
 package com.example.pfa2.models;
 import lombok.*;
+
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,12 +9,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "user")
+@Document(collection = "users")
 @Data
 @AllArgsConstructor
 public class User {
     @Id
-    private String idU;
+    private ObjectId idU;
     private String nom;
     private String email;
     private String motDePasse;
@@ -33,11 +35,11 @@ public class User {
     }
 
     // Getters and Setters
-    public String getIdU() {
+    public ObjectId getIdU() {
         return idU;
     }
 
-    public void setIdU(String idu) {
+    public void setIdU(ObjectId idu) {
         this.idU = idu;
     }
 

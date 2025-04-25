@@ -1,109 +1,170 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiService {
-  late final Dio _dio;
+  final Dio _dio;
 
-  ApiService() {
-    // Choose the appropriate URL based on platform
-    String baseUrl;
+  ApiService() : _dio = Dio() {
+    // For Android emulator
+    _dio.options.baseUrl = 'http://10.0.2.2:8080/api';
+    // Uncomment if using iOS simulator
+    // _dio.options.baseUrl = 'http://127.0.0.1:8080/api';
+    // Uncomment if using physical device (replace with your computer's IP)
+    // _dio.options.baseUrl = 'http://192.168.1.X:8080/api';
+
+
+ 
     if (kIsWeb) {
       // For web apps running in browsers
-      baseUrl = 'http://localhost:8080/api';
+      _dio.options.baseUrl = 'http://localhost:8080/api';
     } else if (Platform.isAndroid) {
       // For Android emulators
-      baseUrl = 'http://10.0.2.2:8080/api';
+      _dio.options.baseUrl = 'http://10.0.2.2:8080/api';
     } else {
       // For iOS and other platforms
-      baseUrl = 'http://localhost:8080/api';
+      _dio.options.baseUrl = 'http://localhost:8080/api';
     }
+    _dio.options.connectTimeout = const Duration(seconds: 10);
+    _dio.options.receiveTimeout = const Duration(seconds: 10);
 
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
-        contentType: 'application/json',
-        validateStatus: (status) {
-          // Accept all status codes so we can handle them manually
-          return true;
-        },
-      ),
-    );
-
+    // Add comprehensive logging
     _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          debugPrint('REQUEST[${options.method}] => PATH: ${options.path}');
-          return handler.next(options);
-        },
-        onResponse: (response, handler) {
-          debugPrint(
-            'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}',
-          );
-          return handler.next(response);
-        },
-        onError: (DioException e, handler) {
-          debugPrint(
-            'ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}',
-          );
-          return handler.next(e);
-        },
+      LogInterceptor(
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+        logPrint: (obj) => print('DIO: $obj'),
       ),
     );
   }
 
-  Future<Response> post(String path, dynamic data) async {
+  Future<Response> get(String path) async {
     try {
-      debugPrint('POST request to $path with data: $data');
-      return await _dio.post(path, data: data);
+      print('Sending GET request to: ${_dio.options.baseUrl}$path');
+      final response = await _dio.get(path);
+      print('GET response status: ${response.statusCode}');
+      return response;
     } catch (e) {
-      _handleError(e);
-      rethrow;
+      print('GET request failed: $e');
+      throw _handleError(e);
     }
   }
 
-  Future<Response> get(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-  }) async {
+  Future<Response> post(String path, Map<String, dynamic> data) async {
     try {
-      debugPrint('GET request to $path with params: $queryParameters');
-      return await _dio.get(path, queryParameters: queryParameters);
+      print('Sending POST request to: ${_dio.options.baseUrl}$path');
+      print('POST data: $data');
+
+      final response = await _dio.post(
+        path,
+        data: data,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      print('POST response status: ${response.statusCode}');
+      print('POST response headers: ${response.headers}');
+      print('POST response data: ${response.data}');
+
+      return response;
     } catch (e) {
-      _handleError(e);
-      rethrow;
+      print('POST request failed: $e');
+      if (e is DioException && e.response != null) {
+        print('Error response status: ${e.response?.statusCode}');
+        print('Error response data: ${e.response?.data}');
+      }
+      throw _handleError(e);
     }
   }
 
-  Future<Response> put(String path, dynamic data) async {
-    try {
-      return await _dio.put(path, data: data);
-    } catch (e) {
-      _handleError(e);
-      rethrow;
-    }
-  }
 
-  Future<Response> delete(String path) async {
+    Future<Response> delete(String path) async {
     try {
       return await _dio.delete(path);
     } catch (e) {
-      _handleError(e);
-      rethrow;
+      throw _handleError(e);
     }
   }
 
-  void _handleError(dynamic error) {
+
+
+  Future<bool> testConnection() async {
+    try {
+      print('Testing connection to: ${_dio.options.baseUrl}');
+
+      // Try a simple request to the base URL or a health endpoint
+      final response = await _dio.get(
+        '/', // or '/health' if you have such an endpoint
+        options: Options(
+          validateStatus: (status) => true, // Accept any status
+          sendTimeout: const Duration(seconds: 5),
+          receiveTimeout: const Duration(seconds: 5),
+        ),
+      );
+
+      print('Connection test status code: ${response.statusCode}');
+      return response.statusCode != null && response.statusCode! < 500;
+    } catch (e) {
+      print('Connection test failed: $e');
+      return false;
+    }
+  }
+
+  Exception _handleError(dynamic error) {
     if (error is DioException) {
-      debugPrint('DioError: ${error.message}');
+      print('DioError type: ${error.type}');
+      print('DioError message: ${error.message}');
+
       if (error.response != null) {
-        debugPrint('Error Status: ${error.response?.statusCode}');
-        debugPrint('Error Response: ${error.response?.data}');
+        print('Error response status: ${error.response?.statusCode}');
+        print('Error response data: ${error.response?.data}');
+
+        // Return more specific error based on status code
+        if (error.response?.statusCode == 401) {
+          return Exception('Invalid email or password');
+        } else if (error.response?.statusCode == 404) {
+          return Exception('API endpoint not found');
+        } else if (error.response?.statusCode != null) {
+          return Exception(
+            'Server error: ${error.response?.statusCode} - ${error.response?.data}',
+          );
+        }
       }
-    } else {
-      debugPrint('Unexpected error: $error');
+
+      if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.receiveTimeout ||
+          error.type == DioExceptionType.sendTimeout) {
+        return Exception(
+          'Connection timeout. Please check your internet connection.',
+        );
+      } else if (error.type == DioExceptionType.connectionError) {
+        return Exception(
+          'Cannot connect to server. Please check your network connection.',
+        );
+      }
+
+      return Exception('Network error: ${error.message}');
+    }
+
+    return Exception('An unexpected error occurred: $error');
+  }
+
+
+
+
+  Future<Response> getUserById(String userId) async {
+    try {
+      return await _dio.get('/users/$userId');
+    } catch (e) {
+      throw _handleError(e);
     }
   }
 }

@@ -1,5 +1,5 @@
 class User {
-  final String id;
+  final IdU idU;
   final String nom;
   final String email;
   final String? motDePasse; // Only for login/registration
@@ -10,9 +10,13 @@ class User {
   final List<String> allergies;
   final List<String> maladies;
   final String? etatActivite;
+  final String? dashBoardQuotidienId;
+  final List<String> notificationIds;
+  final List<String> objectifIds;
+  final List<String> platFavoriIds;
 
   User({
-    required this.id,
+    required this.idU,
     required this.nom,
     required this.email,
     this.motDePasse,
@@ -23,31 +27,47 @@ class User {
     this.allergies = const [],
     this.maladies = const [],
     this.etatActivite,
+    this.dashBoardQuotidienId,
+    required this.notificationIds,
+    required this.objectifIds,
+    required this.platFavoriIds,
   });
 
   // Convert JSON to User
-  factory User.fromJson(Map<String, dynamic> json) {
+   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['idU'] ?? '',
-      nom: json['nom'] ?? '',
-      email: json['email'] ?? '',
-      dob: json['dob'] != null ? DateTime.parse(json['dob']) : null,
+      idU: IdU.fromJson(json['idU']),
+      nom: json['nom'],
+      email: json['email'],
+      motDePasse: json['motDePasse'],
+      dob: json['dob'] != null
+          ? DateTime.parse(json['dob'])
+          : null,
+    
       sexe: json['sexe'],
-      taille: json['taille']?.toDouble(),
-      poids: json['poids']?.toDouble(),
-      allergies: List<String>.from(json['allergies'] ?? []),
-      maladies: List<String>.from(json['maladies'] ?? []),
+      taille: json['taille'].toDouble(),
+      poids: json['poids'].toDouble(),
+      allergies: List<String>.from(json['allergies']),
+      maladies: List<String>.from(json['maladies']),
       etatActivite: json['etatActivite'],
+      dashBoardQuotidienId: json['dashBoardQuotidienId'],
+      notificationIds: List<String>.from(json['notificationIds']),
+      objectifIds: List<String>.from(json['objectifIds']),
+      platFavoriIds: List<String>.from(json['platFavoriIds']),
     );
   }
 
+  @override
+  String toString() {
+    return 'User{name: $nom, email: $email}';
+  }
   // Convert User to JSON (for POST/PUT requests)
   Map<String, dynamic> toJson() {
     return {
       'nom': nom,
       'email': email,
       'motDePasse': motDePasse,
-      'dob': dob?.toIso8601String(),
+      'dob': dob/*?.toIso8601String()*/,
       'sexe': sexe,
       'taille': taille,
       'poids': poids,
@@ -55,5 +75,23 @@ class User {
       'maladies': maladies,
       'etatActivite': etatActivite,
     };
+  }
+ 
+}
+
+class IdU {
+  final int timestamp;
+  final DateTime? date;
+
+  IdU({required this.timestamp, required this.date});
+
+  factory IdU.fromJson(Map<String, dynamic> json) {
+    return IdU(timestamp: json['timestamp'], date: json['date'] != null ? DateTime.parse(json['date']) : null,
+    );
+  }
+
+  @override
+  String toString() {
+    return timestamp.toString();
   }
 }

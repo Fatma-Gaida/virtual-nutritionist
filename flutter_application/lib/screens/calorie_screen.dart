@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/models/meal_model.dart';
+import 'package:flutter_application/screens/MealHistoryScreen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
 import 'package:flutter_application/screens/recipe_screen.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../models/calorie_model.dart';
 import '../repositories/Calories_repository.dart';
-
+import 'package:intl/intl.dart';
 
 class CalorieScreen extends StatefulWidget {
   const CalorieScreen({super.key});
@@ -40,11 +41,11 @@ class _CalorieScreenState extends State<CalorieScreen> {
           future: _calorieDataFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData) {
-              return Center(child: Text('No data available'));
+              return const Center(child: Text('No data available'));
             }
 
             final calorieData = snapshot.data!;
@@ -55,7 +56,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
                   _buildHeader(calorieData),
                   _buildCalorieCard(calorieData),
                   _buildMealsList(calorieData),
-                  SizedBox(height: 80), // Space for bottom navigation
+                  const SizedBox(height: 80), // Space for bottom navigation
                 ],
               ),
             );
@@ -65,8 +66,11 @@ class _CalorieScreenState extends State<CalorieScreen> {
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
-
+/*
   Widget _buildHeader(CalorieData data) {
+    // Format the date as "Today, DD MMM"
+    String formattedDate = _formatDate(data.date);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
@@ -74,20 +78,23 @@ class _CalorieScreenState extends State<CalorieScreen> {
         children: [
           Row(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 backgroundImage: AssetImage('assets/images/profile.png'),
                 radius: 24,
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     data.username,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
-                    data.date,
+                    formattedDate,
                     style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
@@ -95,12 +102,86 @@ class _CalorieScreenState extends State<CalorieScreen> {
             ],
           ),
           IconButton(
-            icon: Icon(Icons.notifications_outlined),
+            icon: const Icon(Icons.notifications_outlined),
             onPressed: () {},
           ),
         ],
       ),
     );
+  }
+*/
+Widget _buildHeader(CalorieData data) {
+    // Format the date as "Today, DD MMM"
+    String formattedDate = _formatDate(data.date);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const CircleAvatar(
+                backgroundImage: AssetImage('assets/images/profile.png'),
+                radius: 24,
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    data.username,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    formattedDate,
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              // History button
+              IconButton(
+                icon: const Icon(Icons.history),
+                tooltip: 'Meal History',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MealHistoryScreen(),
+                    ),
+                  ).then((_) {
+                    // Refresh data when returning from history screen
+                    _refreshData();
+                  });
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dateToCheck = DateTime(date.year, date.month, date.day);
+
+    if (dateToCheck == today) {
+      return 'Today, ${DateFormat('d MMM').format(date)}';
+    } else {
+      return DateFormat('EEEE, d MMM').format(date);
+    }
   }
 
   Widget _buildCalorieCard(CalorieData data) {
@@ -108,14 +189,14 @@ class _CalorieScreenState extends State<CalorieScreen> {
       padding: const EdgeInsets.all(16.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Color(0xFF2E6930),
+          color: const Color(0xFF2E6930),
           borderRadius: BorderRadius.circular(16),
         ),
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             Row(
-              children: [
+              children: const [
                 Text(
                   'My Calories',
                   style: TextStyle(
@@ -128,7 +209,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
                 Icon(Icons.emoji_food_beverage, color: Colors.amber),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             CircularPercentIndicator(
               radius: 80.0,
               lineWidth: 15.0,
@@ -139,7 +220,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
                 children: [
                   Text(
                     '${data.totalCalories}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 26.0,
                       color: Colors.white,
@@ -155,10 +236,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
               backgroundColor: Colors.green.withOpacity(0.3),
               circularStrokeCap: CircularStrokeCap.round,
             ),
-            SizedBox(height: 20),
-            Row(
-              // Keeping this row for future implementation
-            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -174,7 +252,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Meals today',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -189,7 +267,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
                     _refreshData();
                   });
                 },
-                child: Text('All'),
+                child: const Text('All'),
                 style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
               ),
             ],
@@ -206,8 +284,8 @@ class _CalorieScreenState extends State<CalorieScreen> {
       background: Container(
         color: Colors.red,
         alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
-        child: Icon(Icons.delete, color: Colors.white),
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
       direction: DismissDirection.endToStart,
       onDismissed: (direction) {
@@ -234,26 +312,33 @@ class _CalorieScreenState extends State<CalorieScreen> {
                 meal.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.fastfood, size: 24, color: Colors.amber);
+                  return const Icon(
+                    Icons.fastfood,
+                    size: 24,
+                    color: Colors.amber,
+                  );
                 },
               ),
             ),
           ),
-          title: Text(meal.name, style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(
+            meal.name,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           subtitle: Row(
             children: [
               Text(meal.type, style: TextStyle(color: Colors.grey[600])),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Text(
                 '${meal.calories} Kcal',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.amber,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          trailing: Icon(Icons.chevron_right),
+          trailing: const Icon(Icons.chevron_right),
           onTap: () {
             // Navigate to meal details if needed
           },
@@ -269,21 +354,27 @@ class _CalorieScreenState extends State<CalorieScreen> {
       unselectedItemColor: Colors.grey,
       currentIndex: 1, // Calories tab is selected
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
+        const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.bar_chart),
+          label: 'Calories',
+        ),
         BottomNavigationBarItem(
           icon: CircleAvatar(
             backgroundColor: Colors.green[800],
             radius: 22,
-            child: Icon(Icons.camera_alt, color: Colors.white),
+            child: const Icon(Icons.camera_alt, color: Colors.white),
           ),
           label: '',
         ),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
           icon: Icon(Icons.fitness_center),
           label: 'Activity',
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'Profile',
+        ),
       ],
       onTap: (index) {
         if (index == 1) {

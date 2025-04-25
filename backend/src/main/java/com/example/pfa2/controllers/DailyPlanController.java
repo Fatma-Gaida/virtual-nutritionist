@@ -16,6 +16,7 @@ public class DailyPlanController {
     private UserService userService;
     
     // Get the user's daily plan
+    /* 
     @GetMapping
     public ResponseEntity<DailyPlan> getUserDailyPlan(@PathVariable String userId) {
         try {
@@ -25,7 +26,18 @@ public class DailyPlanController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+    */
+    @GetMapping
+    public ResponseEntity getUserDailyPlan(@PathVariable String userId) {
+        try {
+            DailyPlan dailyPlan = userService.getUserDailyPlan(userId);
+            return new ResponseEntity<>(dailyPlan, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Return the error message for debugging
+            return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     // Add a meal to the daily plan
     @PostMapping("/meals")
     public ResponseEntity<DailyPlan> addMealToDailyPlan(

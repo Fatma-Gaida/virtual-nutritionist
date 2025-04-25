@@ -1,13 +1,13 @@
 import 'meal_model.dart';
+import 'package:intl/intl.dart';
 
 class CalorieData {
   final String username;
-  final String date;
+  final DateTime date;
   final int totalCalories;
   final int calorieGoal;
   final double caloriePercentage;
   final List<Meal> meals;
-  // Removed macros as you mentioned they're not being used for now
 
   CalorieData({
     required this.username,
@@ -22,13 +22,39 @@ class CalorieData {
   factory CalorieData.fromMap(Map<String, dynamic> map) {
     List<Meal> mealsList = [];
     if (map['meals'] != null) {
-      mealsList =
-          (map['meals'] as List).map((item) => Meal.fromMap(item)).toList();
+      // The issue might be here - check if map['meals'] is actually a List
+      if (map['meals'] is List) {
+        mealsList =
+            (map['meals'] as List).map((item) => Meal.fromMap(item)).toList();
+      } else {
+        print(
+          'Warning: Expected meals to be a List but got ${map['meals'].runtimeType}',
+        );
+        // Handle the case where meals is not a list
+      }
+    }
+
+    // Parse the date properly
+    DateTime parsedDate;
+    try {
+      if (map['date'] != null) {
+        if (map['date'] is String) {
+          parsedDate = DateTime.parse(map['date']);
+        } else if (map['date'] is DateTime) {
+          parsedDate = map['date'];
+        } else {
+          parsedDate = DateTime.now();
+        }
+      } else {
+        parsedDate = DateTime.now();
+      }
+    } catch (e) {
+      parsedDate = DateTime.now();
     }
 
     return CalorieData(
       username: map['username'] ?? '',
-      date: map['date'] ?? '',
+      date: parsedDate,
       totalCalories: map['totalCalories'] ?? 0,
       calorieGoal: map['calorieGoal'] ?? 2000,
       caloriePercentage:
@@ -41,7 +67,7 @@ class CalorieData {
   Map<String, dynamic> toMap() {
     return {
       'username': username,
-      'date': date,
+      'date': date.toIso8601String(),
       'totalCalories': totalCalories,
       'calorieGoal': calorieGoal,
       'caloriePercentage': caloriePercentage,

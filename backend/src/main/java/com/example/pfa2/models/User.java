@@ -1,7 +1,6 @@
 package com.example.pfa2.models;
 import lombok.*;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class User {
     @Id
-    private ObjectId idU;
+    private String id;
     private String nom;
     private String email;
     private String motDePasse;
@@ -25,7 +24,7 @@ public class User {
     private List<String> allergies;
     private List<String> maladies;
     private String etatActivite;
-    private String dashBoardQuotidienId;
+    //private String dashBoardQuotidienId;
     private List<String> notificationIds = new ArrayList<>();
     private List<String> objectifIds = new ArrayList<>();
     private List<String> platFavoriIds = new ArrayList<>();
@@ -35,12 +34,12 @@ public class User {
     }
 
     // Getters and Setters
-    public ObjectId getIdU() {
-        return idU;
+    public String getIdU() {
+        return id;
     }
 
-    public void setIdU(ObjectId idu) {
-        this.idU = idu;
+    public void setIdU(String idu) {
+        this.id = idu;
     }
 
     public String getNom() {
@@ -122,7 +121,7 @@ public class User {
     public void setEtatActivite(String etatActivite) {
         this.etatActivite = etatActivite;
     }
-
+/*
     public String getDashBoardQuotidienId() {
         return dashBoardQuotidienId;
     }
@@ -130,7 +129,7 @@ public class User {
     public void setDashBoardQuotidienId(String dashBoardQuotidienId) {
         this.dashBoardQuotidienId = dashBoardQuotidienId;
     }
-
+*/
     public List<String> getNotificationIds() {
         return notificationIds;
     }

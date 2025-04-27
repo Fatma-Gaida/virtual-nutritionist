@@ -4,14 +4,15 @@ public class Ingredient {
     private String name;
     private int quantity;
     private String unit; // g, ml
-
+    private String imageUrlIng;
     // Constructeurs
     public Ingredient() {}
     
-    public Ingredient(String name, int quantity, String unit) {
+    public Ingredient(String name, int quantity, String unit, String imageUrlIng) {
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
+        this.imageUrlIng = imageUrlIng;
     }
     
     // Getters and Setters
@@ -21,6 +22,14 @@ public class Ingredient {
     
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImageUrlIng() {
+        return imageUrlIng;
+    }
+
+    public void setImageUrlIng(String imageUrlIng) {
+        this.imageUrlIng = imageUrlIng;
     }
     
     public int getQuantity() {

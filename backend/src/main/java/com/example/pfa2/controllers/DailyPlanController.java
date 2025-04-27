@@ -2,6 +2,7 @@ package com.example.pfa2.controllers;
 
 import com.example.pfa2.models.DailyPlan;
 import com.example.pfa2.services.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

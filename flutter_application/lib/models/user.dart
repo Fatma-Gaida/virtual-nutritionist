@@ -1,5 +1,5 @@
 class User {
-  final IdU idU;
+  final String id;
   final String nom;
   final String email;
   final String? motDePasse; // Only for login/registration
@@ -16,7 +16,7 @@ class User {
   final List<String> platFavoriIds;
 
   User({
-    required this.idU,
+    required this.id,
     required this.nom,
     required this.email,
     this.motDePasse,
@@ -36,7 +36,8 @@ class User {
   // Convert JSON to User
    factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      idU: IdU.fromJson(json['idU']),
+      //idU: IdU.fromJson(json['idU']),
+      id: json['id'],
       nom: json['nom'],
       email: json['email'],
       motDePasse: json['motDePasse'],
@@ -79,6 +80,8 @@ class User {
  
 }
 
+
+/*
 class IdU {
   final int timestamp;
   final DateTime? date;
@@ -95,3 +98,4 @@ class IdU {
     return timestamp.toString();
   }
 }
+*/

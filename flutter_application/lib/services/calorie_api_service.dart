@@ -1,3 +1,4 @@
+/*
 // ignore: unused_import
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
@@ -114,5 +115,122 @@ class CalorieApiService {
       'Dec',
     ];
     return 'Today, ${now.day} ${months[now.month]}';
+  }
+}
+*/
+import 'package:flutter/foundation.dart';
+import '../models/meal_model.dart';
+import '../models/calorie_model.dart';
+import 'api_service.dart';
+
+class CalorieApiService {
+  final ApiService _apiService = ApiService();
+
+  // Get today's calorie data for user
+  Future<Map<String, dynamic>> getTodayCalorieData(String userId) async {
+    try {
+      final response = await _apiService.get('/users/$userId/daily-plan');
+
+      // Return the raw data - let the repository handle parsing
+      if (response.statusCode == 200) {
+        return response.data is Map<String, dynamic>
+            ? response.data
+            : {'data': response.data};
+      } else if (response.statusCode == 404) {
+        return {'status': 'not_found'};
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      throw Exception('Failed to load calorie data: $e');
+    }
+  }
+
+  // Get user details (for calorie goals)
+  Future<Map<String, dynamic>> getUserDetails(String userId) async {
+    try {
+      final response = await _apiService.get('/users/$userId');
+
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('Failed to get user data: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      throw Exception('Failed to load user data: $e');
+    }
+  }
+
+  // Create new daily plan
+  Future<void> createDailyPlan(
+    String userId,
+    Map<String, dynamic> planData,
+  ) async {
+    try {
+      await _apiService.post('/users/$userId/daily-plan', planData);
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      throw Exception('Failed to create daily plan: $e');
+    }
+  }
+
+  // Add a meal
+  Future<void> addMeal(String userId, Map<String, dynamic> mealData) async {
+    try {
+      await _apiService.post('/users/$userId/daily-plan/meals', mealData);
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      throw Exception('Failed to add meal: $e');
+    }
+  }
+
+  // Remove a meal
+  Future<void> removeMeal(String userId, String mealId) async {
+    try {
+      await _apiService.delete('/users/$userId/daily-plan/meals/$mealId');
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      throw Exception('Failed to remove meal: $e');
+    }
+  }
+
+  // Get calorie data for specific date
+  Future<Map<String, dynamic>> getCalorieDataForDate(
+    String userId,
+    String dateStr,
+  ) async {
+    try {
+      final response = await _apiService.get(
+        '/users/$userId/daily-plan?date=$dateStr',
+      );
+
+      if (response.statusCode == 200) {
+        return response.data;
+      } else if (response.statusCode == 404) {
+        return {'status': 'not_found'};
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      throw Exception('Failed to load calorie data for date: $e');
+    }
+  }
+
+  // Get consumed meals history
+  Future<List<dynamic>> getConsumedMealsForUser(String userId) async {
+    try {
+      final response = await _apiService.get('/users/$userId/plats-consommes');
+      if (response.statusCode == 200) {
+        return response.data is List ? response.data : [];
+      } else {
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      throw Exception('Failed to load consumed meals: $e');
+    }
   }
 }

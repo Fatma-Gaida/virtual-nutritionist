@@ -35,6 +35,8 @@ public class RecipeService {
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
     }
+
+
     
     public List<Recipe> getRecipesByMealType(String mealType) {
         return recipeRepository.findByMealType(mealType);

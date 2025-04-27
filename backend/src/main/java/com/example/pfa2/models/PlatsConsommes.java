@@ -16,12 +16,12 @@ public class PlatsConsommes extends Recipe {
         this.dateConsommation = LocalDateTime.now();
     }
     
-    public PlatsConsommes(Recipe recipe, String userId, String meal) {
+    public PlatsConsommes(Recipe recipe, String userId2, String meal) {
         super(recipe.getName(), recipe.getDescription(), recipe.getImageUrl(),
               recipe.getPreparationTime(), recipe.getCalories(), 
               recipe.getMealType(), recipe.getIngredients());
         this.setId(recipe.getId());
-        this.userId = userId;
+        this.userId = userId2;
         this.meal = meal;
         this.dateConsommation = LocalDateTime.now();
     }

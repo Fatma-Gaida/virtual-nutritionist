@@ -2,10 +2,12 @@ package com.example.pfa2.controllers;
 
 import com.example.pfa2.models.User;
 import com.example.pfa2.services.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -35,5 +37,13 @@ public class UserController {
             return ResponseEntity.badRequest().body("Invalid ID format"); // HTTP 400
         }
     }
+
+    // Get all users
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+    
 
 }

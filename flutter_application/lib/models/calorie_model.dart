@@ -1,9 +1,77 @@
 import 'meal_model.dart';
-import 'package:intl/intl.dart';
+/*
+class CalorieData {
+  final String username;
+  final String date;
+  final int totalCalories;
+  final int calorieGoal;
+  final double caloriePercentage;
+  final List<Meal> meals;
+
+  CalorieData({
+    required this.username,
+    required this.date,
+    required this.totalCalories,
+    required this.calorieGoal,
+    required this.caloriePercentage,
+    required this.meals,
+  });
+/*
+  // Factory constructor to create a CalorieData from a map (for JSON parsing)
+  factory CalorieData.fromMap(Map<String, dynamic> map) {
+    List<Meal> mealsList = [];
+    if (map['meals'] != null) {
+      mealsList =
+          (map['meals'] as List).map((item) => Meal.fromMap(item)).toList();
+    }
+
+    return CalorieData(
+      username: map['username'] ?? '',
+      date: map['date'] ?? '',
+      totalCalories: map['totalCalories'] ?? 0,
+      calorieGoal: map['calorieGoal'] ?? 2000,
+      caloriePercentage:
+          (map['totalCalories'] ?? 0) / (map['calorieGoal'] ?? 2000),
+      //meals: mealsList,
+      meals: (map['meals'] as List).map((m) => Meal.fromMap(m)).toList(),
+    );
+  }
+*/
+  factory CalorieData.fromMap(Map<String, dynamic> map) {
+    List<Meal> mealsList = [];
+    if (map['meals'] != null) {
+      mealsList =
+          (map['meals'] as List).map((item) => Meal.fromMap(item)).toList();
+    }
+
+    return CalorieData(
+      username: map['username'] ?? '',
+      date: map['date'] ?? '',
+      totalCalories: map['totalCalories'] ?? 0,
+      calorieGoal: map['calorieGoal'] ?? 2000,
+      caloriePercentage:
+          (map['totalCalories'] ?? 0) / (map['calorieGoal'] ?? 2000),
+      meals: mealsList, // Use the parsed list instead of parsing again
+    );
+  }
+  // Convert to map for sending to API
+  Map<String, dynamic> toMap() {
+    return {
+      'username': username,
+      'date': date,
+      'totalCalories': totalCalories,
+      'calorieGoal': calorieGoal,
+      'caloriePercentage': caloriePercentage,
+      'meals': meals.map((meal) => meal.toMap()).toList(),
+    };
+  }
+}
+*/
+
 
 class CalorieData {
   final String username;
-  final DateTime date;
+  final String date;
   final int totalCalories;
   final int calorieGoal;
   final double caloriePercentage;
@@ -18,56 +86,43 @@ class CalorieData {
     required this.meals,
   });
 
-  // Factory constructor to create a CalorieData from a map (for JSON parsing)
   factory CalorieData.fromMap(Map<String, dynamic> map) {
-    List<Meal> mealsList = [];
-    if (map['meals'] != null) {
-      // The issue might be here - check if map['meals'] is actually a List
-      if (map['meals'] is List) {
-        mealsList =
-            (map['meals'] as List).map((item) => Meal.fromMap(item)).toList();
-      } else {
-        print(
-          'Warning: Expected meals to be a List but got ${map['meals'].runtimeType}',
-        );
-        // Handle the case where meals is not a list
-      }
-    }
+    List<Meal> parsedMeals = [];
 
-    // Parse the date properly
-    DateTime parsedDate;
-    try {
-      if (map['date'] != null) {
-        if (map['date'] is String) {
-          parsedDate = DateTime.parse(map['date']);
-        } else if (map['date'] is DateTime) {
-          parsedDate = map['date'];
-        } else {
-          parsedDate = DateTime.now();
-        }
-      } else {
-        parsedDate = DateTime.now();
+    // Safely parse the meals field
+    if (map['meals'] != null) {
+      // Check if it's already a list
+      if (map['meals'] is List) {
+        parsedMeals =
+            List<Map<String, dynamic>>.from(
+              map['meals'],
+            ).map((mealMap) => Meal.fromMap(mealMap)).toList();
       }
-    } catch (e) {
-      parsedDate = DateTime.now();
+      // If it's a map with numeric keys (which can happen with some JSON encodings)
+      else if (map['meals'] is Map) {
+        final mealsMap = map['meals'] as Map;
+        // Convert the map values to a list
+        parsedMeals =
+            mealsMap.values
+                .map((meal) => Meal.fromMap(meal as Map<String, dynamic>))
+                .toList();
+      }
     }
 
     return CalorieData(
       username: map['username'] ?? '',
-      date: parsedDate,
+      date: map['date'] ?? '',
       totalCalories: map['totalCalories'] ?? 0,
-      calorieGoal: map['calorieGoal'] ?? 2000,
-      caloriePercentage:
-          (map['totalCalories'] ?? 0) / (map['calorieGoal'] ?? 2000),
-      meals: mealsList,
+      calorieGoal: map['calorieGoal'] ?? 0,
+      caloriePercentage: map['caloriePercentage']?.toDouble() ?? 0.0,
+      meals: parsedMeals,
     );
   }
 
-  // Convert to map for sending to API
   Map<String, dynamic> toMap() {
     return {
       'username': username,
-      'date': date.toIso8601String(),
+      'date': date,
       'totalCalories': totalCalories,
       'calorieGoal': calorieGoal,
       'caloriePercentage': caloriePercentage,

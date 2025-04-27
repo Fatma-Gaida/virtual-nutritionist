@@ -25,7 +25,7 @@ class AuthService {
       try {
         final response = await _apiService.post('/login', {
           'email': email,
-          'motDePasse': password,
+          'password': password,
         });
 
         print('Login response received: ${response.statusCode}');
@@ -82,8 +82,8 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
 
     // Save user ID
-    String userId = user.idU.timestamp.toString();
-    await prefs.setString('user_id', userId);
+    //String userId = user.idU.timestamp.toString();
+    await prefs.setString('user_id', user.id);
     await prefs.setString('user_name', user.nom);
     await prefs.setString('user_email', user.email);
 
@@ -126,14 +126,16 @@ class AuthService {
       return null;
     }
 
+  /*
     // Create an IdU object from the stored string
     final idU = IdU(
       timestamp: int.parse(userId),
       date: null, // We don't store the date part
     );
-
+*/
     return User(
-      idU: idU,
+      id: prefs.getString('user_id') ?? '',
+      //idU: idU,
       nom: prefs.getString('user_name') ?? '',
       email: prefs.getString('user_email') ?? '',
       dob:

@@ -149,4 +149,12 @@ public class RecipeController {
         int totalCalories = recipeService.getTotalCaloriesConsumedByDate(userId, date);
         return new ResponseEntity<>(totalCalories, HttpStatus.OK);
     }
+
+    /*
+    @PostMapping("/favorites")
+    public ResponseEntity<Map<String, List<Recipe>>> getFavoriteRecipes(@RequestBody List<String> recipeIds) {
+        List<Recipe> recipes = recipeService.getRecipesByIds(recipeIds);
+        return ResponseEntity.ok().body(Map.of("recipes", recipes));
+    }
+        */
 }

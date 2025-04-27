@@ -2,7 +2,7 @@ package com.example.pfa2.models;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "platsFavoris")
+@Document(collection = "PlatsFavoris")
 public class PlatsFavoris extends Recipe {
     
     private String userId;
@@ -12,12 +12,12 @@ public class PlatsFavoris extends Recipe {
         super();
     }
     
-    public PlatsFavoris(Recipe recipe, String userId) {
+    public PlatsFavoris(Recipe recipe, String userId2) {
         super(recipe.getName(), recipe.getDescription(), recipe.getImageUrl(),
               recipe.getPreparationTime(), recipe.getCalories(), 
               recipe.getMealType(), recipe.getIngredients());
         this.setId(recipe.getId());
-        this.userId = userId;
+        this.userId = userId2;
     }
     
     // Getters and Setters

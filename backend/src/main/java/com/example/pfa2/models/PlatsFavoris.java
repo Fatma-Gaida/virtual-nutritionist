@@ -1,11 +1,12 @@
 package com.example.pfa2.models;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "platsFavoris")
+@Document(collection = "PlatsFavoris")
 public class PlatsFavoris extends Recipe {
     
-    private String userId;
+    private ObjectId userId;
     private boolean isFavorite;
     
     // Constructeurs
@@ -14,21 +15,21 @@ public class PlatsFavoris extends Recipe {
         this.isFavorite = true;
     }
     
-    public PlatsFavoris(Recipe recipe, String userId) {
+    public PlatsFavoris(Recipe recipe, ObjectId userId2) {
         super(recipe.getName(), recipe.getDescription(), recipe.getImageUrl(),
               recipe.getPreparationTime(), recipe.getCalories(), 
               recipe.getMealType(), recipe.getIngredients());
         this.setId(recipe.getId());
-        this.userId = userId;
+        this.userId = userId2;
         this.isFavorite = true;
     }
     
     // Getters and Setters
-    public String getUserId() {
+    public ObjectId getUserId() {
         return userId;
     }
     
-    public void setUserId(String userId) {
+    public void setUserId(ObjectId userId) {
         this.userId = userId;
     }
     

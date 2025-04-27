@@ -5,6 +5,8 @@ import com.example.pfa2.models.User;
 import com.example.pfa2.repository.DailyPlanRepository;
 import com.example.pfa2.repository.RecipeRepository;
 import com.example.pfa2.repository.UserRepository;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,10 +59,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getUserById(String id) {
+    public Optional<User> getUserById(ObjectId id) {
         return userRepository.findById(id);
     }
-    
+    /*
     public DailyPlan getUserDailyPlan(String userId) {
         // Try to find an existing plan for today
         Optional<DailyPlan> existingPlan = dailyPlanRepository.findByUserIdAndDate(userId, LocalDate.now());
@@ -86,7 +88,39 @@ public class UserService {
         DailyPlan newPlan = new DailyPlan(userId);
         return dailyPlanRepository.save(newPlan);
     }
-    
+    */
+    public DailyPlan getUserDailyPlan(String userId) {
+        try {
+            // Try to find an existing plan for today
+            Optional<DailyPlan> existingPlan = dailyPlanRepository.findByUserIdAndDate(userId, LocalDate.now());
+
+            if (existingPlan.isPresent()) {
+                return existingPlan.get();
+            }
+
+            // Try to find most recent plan for this user
+            Optional<DailyPlan> oldPlan = dailyPlanRepository.findFirstByUserIdOrderByDateDesc(userId);
+
+            if (oldPlan.isPresent()) {
+                DailyPlan plan = oldPlan.get();
+                // If it's an old plan, reset it for today
+                if (!plan.getDate().equals(LocalDate.now())) {
+                    plan.resetForNewDay();
+                    return dailyPlanRepository.save(plan);
+                }
+                return plan;
+            }
+
+            // If no plan exists at all, create a new one
+            DailyPlan newPlan = new DailyPlan(userId);
+            return dailyPlanRepository.save(newPlan);
+        } catch (Exception e) {
+            // Log the specific error
+            System.err.println("Error in getUserDailyPlan: " + e.getMessage());
+            e.printStackTrace();
+            throw e; // Rethrow to be handled by controller
+        }
+    }
     public DailyPlan addMealToDailyPlan(String userId, String recipeId, String mealType) {
         // Get recipe
         Optional<Recipe> recipeOpt = recipeRepository.findById(recipeId);
@@ -94,16 +128,42 @@ public class UserService {
             throw new RuntimeException("Recette introuvable avec l'ID : " + recipeId);
         }
         Recipe recipe = recipeOpt.get();
-        
+
         // Get or create daily plan
         DailyPlan dailyPlan = getUserDailyPlan(userId);
-        
+
         // Add meal to plan
         dailyPlan.addMeal(mealType, recipe);
-        
+
         // Save and return updated plan
         return dailyPlanRepository.save(dailyPlan);
     }
     
+    
+    public User authenticate(String email, String password) {
+        String trimmedEmail = email.trim();
+        System.out.println("Searching for email: '" + trimmedEmail + "'");
+
+        // For debugging, list all emails in the database
+        List<User> allUsers = userRepository.findAll();
+        System.out.println("All emails in the database:");
+        for (User u : allUsers) {
+            System.out.println("- " + u.getEmail());
+        }
+
+        User user = userRepository.findByEmail(trimmedEmail)
+                .orElseThrow(() -> {
+                    System.out.println("NO USER FOUND FOR: '" + trimmedEmail + "'");
+                    return new RuntimeException("User not found");
+                });
+
+        if (!user.getMotDePasse().equals(password)) {
+            System.out.println("PASSWORD MISMATCH");
+            throw new RuntimeException("Invalid password");
+        }
+
+        return user;
+    }
+
 }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -6,7 +8,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Matching background color
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         leading: const SizedBox.shrink(),
         title: const Text(
@@ -22,45 +24,250 @@ class ProfileScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0), // Consistent padding
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const ProfilePic(),
-              const SizedBox(height: 24), // Consistent spacing
-              ProfileMenu(
-                text: "Personal information",
-                icon: Icons.person, // Matches "Personal information"
-                press: () {},
+        child: Consumer<UserProvider>(
+          builder: (context, userProvider, child) {
+            final user = userProvider.currentUser;
+
+            if (userProvider.isLoading) {
+              return Center(
+                child: CircularProgressIndicator(color: Colors.green[700]),
+              );
+            }
+
+            if (user == null) {
+              return Center(
+                child: Text(
+                  'User not logged in',
+                  style: TextStyle(fontSize: 18, color: Colors.grey[800]),
+                ),
+              );
+            }
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
               ),
-              const SizedBox(height: 12),
-              ProfileMenu(
-                text: "Objective",
-                icon: Icons.flag, // Represents goals or objectives
-                press: () {},
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const ProfilePic(),
+                  const SizedBox(height: 16),
+
+                  // Display user name
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      user.nom,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[800],
+                      ),
+                    ),
+                  ),
+
+                  // Display user email
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      user.email,
+                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  ProfileMenu(
+                    text: "Personal information",
+                    icon: Icons.person,
+                    press: () {
+                      // Navigate to detailed personal info page
+                      _showPersonalInfo(context, user);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  ProfileMenu(
+                    text: "Objective",
+                    icon: Icons.flag,
+                    press: () {
+                      // Navigate to objectives page
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  ProfileMenu(
+                    text: "My favorites",
+                    icon: Icons.favorite,
+                    press: () {
+                      // Navigate to favorites page
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  ProfileMenu(
+                    text: "Settings",
+                    icon: Icons.settings,
+                    press: () {
+                      // Navigate to settings page
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  ProfileMenu(
+                    text: "Help Center",
+                    icon: Icons.help,
+                    press: () {
+                      // Navigate to help center
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Logout button
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[400],
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await userProvider.logout();
+                        // Navigate back to login
+                        if (context.mounted) {
+                          Navigator.of(context).pushReplacementNamed('/login');
+                        }
+                      },
+                      child: const Text('Logout'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 12),
-              ProfileMenu(
-                text: "My favorites",
-                icon: Icons.favorite, // Matches "favorites"
-                press: () {},
-              ),
-              const SizedBox(height: 12),
-              ProfileMenu(
-                text: "Settings",
-                icon: Icons.settings, // Matches "Settings"
-                press: () {},
-              ),
-              const SizedBox(height: 12),
-              ProfileMenu(
-                text: "Help Center",
-                icon: Icons.help, // Matches "Help Center"
-                press: () {},
-              ),
-            ],
-          ),
+            );
+          },
         ),
+      ),
+    );
+  }
+
+  void _showPersonalInfo(BuildContext context, dynamic user) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.7,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Personal Information',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[800],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  InfoItem(title: 'Name', value: user.nom),
+                  InfoItem(title: 'Email', value: user.email),
+                  InfoItem(
+                    title: 'Birth Date',
+                    value:
+                        user.dob != null
+                            ? '${user.dob.day}/${user.dob.month}/${user.dob.year}'
+                            : 'Not provided',
+                  ),
+                  InfoItem(title: 'Gender', value: user.sexe ?? 'Not provided'),
+                  InfoItem(
+                    title: 'Height',
+                    value:
+                        user.taille != null
+                            ? '${user.taille} cm'
+                            : 'Not provided',
+                  ),
+                  InfoItem(
+                    title: 'Weight',
+                    value:
+                        user.poids != null
+                            ? '${user.poids} kg'
+                            : 'Not provided',
+                  ),
+                  InfoItem(
+                    title: 'Activity Level',
+                    value: user.etatActivite ?? 'Not provided',
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  Text(
+                    'Health Information',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[800],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  InfoItem(
+                    title: 'Allergies',
+                    value:
+                        user.allergies.isEmpty
+                            ? 'None'
+                            : user.allergies.join(', '),
+                  ),
+                  InfoItem(
+                    title: 'Medical Conditions',
+                    value:
+                        user.maladies.isEmpty
+                            ? 'None'
+                            : user.maladies.join(', '),
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+}
+
+class InfoItem extends StatelessWidget {
+  final String title;
+  final String value;
+
+  const InfoItem({super.key, required this.title, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
+          Divider(color: Colors.grey[300]),
+        ],
       ),
     );
   }
@@ -82,28 +289,46 @@ class ProfilePic extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.green[700]!, width: 2), // Added green border
+                border: Border.all(color: Colors.green[700]!, width: 2),
               ),
-              child: const CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profil.png'), 
+              child: CircleAvatar(
+                backgroundColor: Colors.grey[300],
+                // If you have a profile image from the user data, use it here
+                // Otherwise use a placeholder or default image
+                backgroundImage: const AssetImage(
+                  'assets/images/default_profile.png',
+                ),
+                // If you don't have the image asset, use an icon instead:
+                // child: Icon(Icons.person, size: 60, color: Colors.white),
               ),
-
             ),
             Positioned(
               right: -8,
               bottom: 0,
-              child: Container(
-                height: 46,
-                width: 46,
-                decoration: BoxDecoration(
-                  color: Colors.green[700],
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.grey[100]!, width: 2),
-                ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  color: Colors.white,
-                  size: 24,
+              child: GestureDetector(
+                onTap: () {
+                  // Add functionality to change profile picture
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Change profile picture feature coming soon',
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 46,
+                  width: 46,
+                  decoration: BoxDecoration(
+                    color: Colors.green[700],
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey[100]!, width: 2),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
               ),
             ),
@@ -123,7 +348,7 @@ class ProfileMenu extends StatelessWidget {
   });
 
   final String text;
-  final IconData icon; // Changed to IconData for Material icons
+  final IconData icon;
   final VoidCallback? press;
 
   @override
@@ -147,26 +372,15 @@ class ProfileMenu extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: Colors.green[700],
-              size: 24,
-            ),
+            Icon(icon, color: Colors.green[700], size: 24),
             const SizedBox(width: 16),
             Expanded(
               child: Text(
                 text,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                ),
+                style: const TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.grey[600],
-              size: 16,
-            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.grey[600], size: 16),
           ],
         ),
       ),

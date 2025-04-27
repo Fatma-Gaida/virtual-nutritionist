@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +62,11 @@ public class RecipeService {
     }
 
     // Méthodes pour PlatsFavoris
-    public List<PlatsFavoris> getFavoriteRecipes(String userId) {
+    public List<PlatsFavoris> getFavoriteRecipes(ObjectId userId) {
         return platsFavorisRepository.findByUserId(userId);
     }
     
-    public PlatsFavoris addFavoriteRecipe(String userId, String recipeId) {
+    public PlatsFavoris addFavoriteRecipe(ObjectId userId, String recipeId) {
         Optional<Recipe> recipeOpt = recipeRepository.findById(recipeId);
         Optional<User> userOpt = userRepository.findById(userId);
         
@@ -89,7 +90,7 @@ public class RecipeService {
         return null;
     }
     
-    public void removeFavoriteRecipe(String userId, String recipeId) {
+    public void removeFavoriteRecipe(ObjectId userId, String recipeId) {
         Optional<User> userOpt = userRepository.findById(userId);
         
         if (userOpt.isPresent()) {

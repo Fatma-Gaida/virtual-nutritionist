@@ -3,7 +3,7 @@ package com.example.pfa2.models;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
-@Document(collection = "platsConsommes")
+@Document(collection = "PlatsConsommes")
 public class PlatsConsommes extends Recipe {
     
     private String userId;

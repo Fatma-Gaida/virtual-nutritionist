@@ -10,5 +10,12 @@ import java.util.Optional;
 @Repository
 public interface DailyPlanRepository extends MongoRepository<DailyPlan, String> {
     Optional<DailyPlan> findByUserIdAndDate(String userId, LocalDate date);
-    Optional<DailyPlan> findByUserId(String userId);
+
+    Optional<DailyPlan> findFirstByUserIdOrderByDateDesc(String userId);
+
+    // This might be better than your current findByUserId which might return
+    // multiple plans
+    default Optional<DailyPlan> findByUserId(String userId) {
+        return findFirstByUserIdOrderByDateDesc(userId);
+    }
 }

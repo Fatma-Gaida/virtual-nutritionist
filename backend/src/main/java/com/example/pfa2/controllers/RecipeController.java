@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -87,7 +86,7 @@ public class RecipeController {
 
     // Recuperer tous les plats favoris d'un utilisateur specifique
     @GetMapping("/favorites/{userId}")
-    public ResponseEntity<List<PlatsFavoris>> getFavoriteRecipes(@PathVariable ObjectId userId) {
+    public ResponseEntity<List<PlatsFavoris>> getFavoriteRecipes(@PathVariable String userId) {
         List<PlatsFavoris> favorites = recipeService.getFavoriteRecipes(userId);
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
@@ -95,7 +94,7 @@ public class RecipeController {
     //ajouter un plat favoris
     @PostMapping("/favorites/{userId}/{recipeId}")
     public ResponseEntity<PlatsFavoris> addFavoriteRecipe(
-            @PathVariable ObjectId userId, 
+            @PathVariable String userId, 
             @PathVariable String recipeId) {
         PlatsFavoris platsFavoris = recipeService.addFavoriteRecipe(userId, recipeId);
         if (platsFavoris != null) {
@@ -107,7 +106,7 @@ public class RecipeController {
     //supprimer un plat favoris
     @DeleteMapping("/favorites/{userId}/{recipeId}")
     public ResponseEntity<Void> removeFavoriteRecipe(
-            @PathVariable ObjectId userId, 
+            @PathVariable String userId, 
             @PathVariable String recipeId) {
         recipeService.removeFavoriteRecipe(userId, recipeId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

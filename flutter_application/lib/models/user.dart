@@ -1,5 +1,5 @@
 class User {
-  final IdU idU;
+  final IdU? idU;
   final String nom;
   final String email;
   final String? motDePasse; // Only for login/registration
@@ -11,12 +11,12 @@ class User {
   final List<String> maladies;
   final String? etatActivite;
   final String? dashBoardQuotidienId;
-  final List<String> notificationIds;
-  final List<String> objectifIds;
-  final List<String> platFavoriIds;
+  final List<String>? notificationIds;
+  final List<String>? objectifIds;
+  final List<String>? platFavoriIds;
 
   User({
-    required this.idU,
+     this.idU,
     required this.nom,
     required this.email,
     this.motDePasse,
@@ -28,10 +28,17 @@ class User {
     this.maladies = const [],
     this.etatActivite,
     this.dashBoardQuotidienId,
-    required this.notificationIds,
-    required this.objectifIds,
-    required this.platFavoriIds,
+     this.notificationIds,
+     this.objectifIds,
+     this.platFavoriIds,
   });
+   Map<String, dynamic> toRegistrationJson() {
+    return {
+      'nom': nom,
+      'email': email,
+      'motDePasse': motDePasse,
+    };
+  }
 
   // Convert JSON to User
    factory User.fromJson(Map<String, dynamic> json) {
@@ -78,6 +85,7 @@ class User {
   }
  
 }
+
 
 class IdU {
   final int timestamp;

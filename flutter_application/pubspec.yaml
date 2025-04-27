@@ -43,6 +43,10 @@ dependencies:
   uuid: ^4.5.1
   intl: ^0.20.2
   provider: ^6.1.4
+  webview_flutter: ^4.4.2
+  webview_flutter_android: ^3.0.0
+  webview_flutter_wkwebview: ^3.15.0
+  js: ^0.6.7
   # cupertino_icons: ^1.0.2
   # dio: ^5.3.2  # HTTP client for API calls
   # uuid: ^3.0.7   # Generate unique IDs
@@ -85,6 +89,7 @@ flutter:
     - assets/images/breakfast.png
     - assets/images/lunch.png
     - assets/images/dinner.png
+    - assets/chatbot.html
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

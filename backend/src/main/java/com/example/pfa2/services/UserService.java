@@ -10,8 +10,12 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,30 +38,40 @@ public class UserService {
         }
 
         // Validate required fields
-        if (user.getNom() == null || user.getEmail() == null || user.getMotDePasse() == null ||
-                user.getDob() == null || user.getSexe() == null || user.getEtatActivite() == null) {
+        if (user.getNom() == null || user.getEmail() == null || user.getMotDePasse() == null )
+        {
             throw new IllegalArgumentException("Tous les champs obligatoires doivent être fournis");
         }
-
-        // Initialize null collections to empty lists
-        if (user.getAllergies() == null) {
-            user.setAllergies(new ArrayList<>());
-        }
-        if (user.getMaladies() == null) {
-            user.setMaladies(new ArrayList<>());
-        }
-        if (user.getNotificationIds() == null) {
-            user.setNotificationIds(new ArrayList<>());
-        }
-        if (user.getObjectifIds() == null) {
-            user.setObjectifIds(new ArrayList<>());
-        }
-        if (user.getPlatFavoriIds() == null) {
-            user.setPlatFavoriIds(new ArrayList<>());
-        }
-
         return userRepository.save(user);
     }
+
+
+    public User updateUserDetails(String userId,
+                                  double poids,
+                                  double taille,
+                                  LocalDate dob,
+                                  String sexe,
+                                  List<String> allergies,
+                                  List<String> maladies,
+                                  String etatActivite) {
+
+        return userRepository.findById(new ObjectId(userId))
+                .map(user -> {
+                    // Update only the specified fields
+                    if (poids > 0) user.setPoids(poids);
+                    if (taille > 0) user.setTaille(taille);
+                    if (dob != null) user.setDob(dob);
+                    if (sexe != null) user.setSexe(sexe);
+                    if (allergies != null) user.setAllergies(allergies);
+                    if (maladies != null) user.setMaladies(maladies);
+                    if (etatActivite != null) user.setEtatActivite(etatActivite);
+
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+    }
+
+
 
     public Optional<User> getUserById(ObjectId id) {
         return userRepository.findById(id);
@@ -133,7 +147,7 @@ public class UserService {
         DailyPlan dailyPlan = getUserDailyPlan(userId);
 
         // Add meal to plan
-        dailyPlan.addMeal(mealType, recipe);
+//        dailyPlan.addMeal(mealType, recipe);
 
         // Save and return updated plan
         return dailyPlanRepository.save(dailyPlan);
@@ -151,11 +165,8 @@ public class UserService {
             System.out.println("- " + u.getEmail());
         }
 
-        User user = userRepository.findByEmail(trimmedEmail)
-                .orElseThrow(() -> {
-                    System.out.println("NO USER FOUND FOR: '" + trimmedEmail + "'");
-                    return new RuntimeException("User not found");
-                });
+        User user = userRepository.findByEmail(trimmedEmail);
+
 
         if (!user.getMotDePasse().equals(password)) {
             System.out.println("PASSWORD MISMATCH");
@@ -163,6 +174,57 @@ public class UserService {
         }
 
         return user;
+    }
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+
+    public double calculateTDEE(User user) {
+        // Validation des données
+        if (user.getPoids() <= 0 || user.getTaille() <= 0 || user.getDob() == null
+                || user.getSexe() == null || user.getEtatActivite() == null) {
+            throw new IllegalArgumentException("Données utilisateur incomplètes ou invalides.");
+        }
+
+        // Calcul de l'âge
+        int age = Period.between(user.getDob(), LocalDate.of(2025, 4, 23)).getYears();
+        if (age <= 0) {
+            throw new IllegalArgumentException("Âge invalide.");
+        }
+
+        // Calcul du TMB
+        double tmb;
+        if (user.getSexe().equalsIgnoreCase("Man")) {
+            tmb = (10 * user.getPoids()) + (6.25 * user.getTaille()) - (5 * age) + 5;
+        } else if (user.getSexe().equalsIgnoreCase("Woman")) {
+            tmb = (10 * user.getPoids()) + (6.25 * user.getTaille()) - (5 * age) - 161;
+        } else {
+            throw new IllegalArgumentException("Sexe invalide. Valeurs attendues : 'Homme' ou 'Femme'.");
+        }
+
+        // Calcul du TDEE en fonction du niveau d'activité
+        double activityFactor;
+        switch (user.getEtatActivite()) {
+            case "Sedentary":
+                activityFactor = 1.55;
+                break;
+            case "Lightly active":
+                activityFactor = 1.85;
+                break;
+            case "Moderately active":
+                activityFactor = 2.2;
+                break;
+            case "Very active":
+                activityFactor = 2.4;
+                break;
+            default:
+                throw new IllegalArgumentException("Niveau d'activité invalide.");
+        }
+
+        BigDecimal tdee = BigDecimal.valueOf(tmb * activityFactor)
+                .setScale(0, RoundingMode.HALF_UP);
+        return tdee.doubleValue();
     }
 
 }

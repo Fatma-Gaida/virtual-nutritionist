@@ -33,7 +33,7 @@ class AuthService {
         if (response.statusCode == 200 || response.statusCode == 201) {
           print('Login successful, parsing user data');
           final user = User.fromJson(response.data);
-          await _saveUserCredentials(user);
+          await saveUserCredentials(user);
           return user;
         } else {
           print('Login failed with status: ${response.statusCode}');
@@ -54,7 +54,7 @@ class AuthService {
         if (response.statusCode == 200 || response.statusCode == 201) {
           print('Second login attempt successful');
           final user = User.fromJson(response.data);
-          await _saveUserCredentials(user);
+          await saveUserCredentials(user);
           return user;
         } else {
           throw Exception('Authentication failed: Invalid credentials');
@@ -78,11 +78,11 @@ class AuthService {
   }
 
   // Save all user data to SharedPreferences
-  Future<void> _saveUserCredentials(User user) async {
+  Future<void> saveUserCredentials(User user) async {
     final prefs = await SharedPreferences.getInstance();
 
     // Save user ID
-    String userId = user.idU.timestamp.toString();
+    String userId = user.idU.toString();
     await prefs.setString('user_id', userId);
     await prefs.setString('user_name', user.nom);
     await prefs.setString('user_email', user.email);
@@ -110,9 +110,23 @@ class AuthService {
     // Save lists
     await prefs.setStringList('user_allergies', user.allergies);
     await prefs.setStringList('user_maladies', user.maladies);
-    await prefs.setStringList('user_notification_ids', user.notificationIds);
-    await prefs.setStringList('user_objectif_ids', user.objectifIds);
-    await prefs.setStringList('user_plat_favori_ids', user.platFavoriIds);
+    if (user.notificationIds != null && user.notificationIds!.isNotEmpty) {
+      await prefs.setStringList('user_notification_ids', user.notificationIds!);
+    } else {
+      await prefs.remove('user_notification_ids');
+    }
+
+    if (user.objectifIds != null && user.objectifIds!.isNotEmpty) {
+      await prefs.setStringList('user_objectif_ids', user.objectifIds!);
+    } else {
+      await prefs.remove('user_objectif_ids');
+    }
+
+    if (user.platFavoriIds != null && user.platFavoriIds!.isNotEmpty) {
+      await prefs.setStringList('user_plat_favori_ids', user.platFavoriIds!);
+    } else {
+      await prefs.remove('user_plat_favori_ids');
+    }
 
     print('User credentials and profile data saved successfully');
   }
@@ -165,7 +179,7 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final user = User.fromJson(response.data);
-        await _saveUserCredentials(user);
+        await saveUserCredentials(user);
         return user;
       } else {
         throw Exception('Failed to fetch user data');

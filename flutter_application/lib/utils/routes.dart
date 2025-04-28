@@ -15,12 +15,12 @@ import 'package:flutter_application/screens/recipe_screen.dart';
 class AppRoutes {
   static const String login = '/login';
   static const String home = '/home';
-  static const String home = '/home';
+  //static const String home = '/home';
   static const String calories = '/calories';
   static const String profile = '/profile';
   static const String activity = '/activity';
-  static const String profile = '/profile';
-  static const String activity = '/activity';
+  //static const String profile = '/profile';
+  //static const String activity = '/activity';
   static const String signup = '/signup';
   static const String camera = '/camera';
   static const String recipes = '/recipes';

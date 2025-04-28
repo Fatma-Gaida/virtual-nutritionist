@@ -48,6 +48,7 @@ class _SignUpScreenState extends State<RegisterScreen> {
           nom: _nameController.text,
           email: _emailController.text,
           motDePasse: _passwordController.text,
+          id: '',
         );
 
         final createdUser = await _registerService.createAccount(user);

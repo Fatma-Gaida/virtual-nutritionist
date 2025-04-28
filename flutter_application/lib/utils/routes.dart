@@ -5,10 +5,20 @@ import 'package:flutter_application/screens/profil_screen.dart';
 //import 'package:flutter_application/screens/activity_screen.dart';
 import 'package:flutter_application/screens/recipe_screen.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_application/screens/calorie_screen.dart';
+//import 'package:flutter_application/screens/home_screen.dart';
+import 'package:flutter_application/screens/profil_screen.dart';
+//import 'package:flutter_application/screens/activity_screen.dart';
+import 'package:flutter_application/screens/recipe_screen.dart';
+
 class AppRoutes {
   static const String login = '/login';
   static const String home = '/home';
+  static const String home = '/home';
   static const String calories = '/calories';
+  static const String profile = '/profile';
+  static const String activity = '/activity';
   static const String profile = '/profile';
   static const String activity = '/activity';
   static const String signup = '/signup';

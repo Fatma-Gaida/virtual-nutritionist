@@ -94,7 +94,7 @@ public class User {
         return poids;
     }
 
-    public void setPoids(Double poids) {
+    public void setPoids(double poids) {
         this.poids = poids;
     }
 

@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
 import 'package:flutter_application/screens/login_screen.dart';
+import 'package:flutter_application/screens/register_screen.dart';
 import 'package:flutter_application/providers/user_provider.dart';
 import 'package:flutter_application/services/auth_service.dart';
 import 'package:flutter_application/services/api_service.dart';
+import 'package:flutter_application/screens/add_plat_screen.dart';
+import 'package:flutter_application/screens/chatbot_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +44,9 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (context) => const LoginScreen(),
           '/calories': (context) => const CalorieScreen(),
+          '/register': (context) => const RegisterScreen(),
+          '/addplat': (context) => const AddPlatScreen(),
+          '/chatbot': (context) =>  ChatbotScreen(chatbotId: '1'),
         },
         theme: ThemeData(
           primarySwatch: Colors.green,

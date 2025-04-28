@@ -1,6 +1,11 @@
 package com.example.pfa2.repository;
 
 import com.example.pfa2.models.User;
+
+import java.util.Optional;
+
+import com.mongodb.client.MongoIterable;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 

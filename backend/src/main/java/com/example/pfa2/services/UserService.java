@@ -86,6 +86,26 @@ public class UserService {
 
         // If no plan exists at all, create a new one
         DailyPlan newPlan = new DailyPlan(userId);
+        Recipe breakfastRecipe = recipeRepository.findById("67fba92eb6527b3a505df972").orElse(null);
+        if (breakfastRecipe != null) {
+            newPlan.addMeal("Breakfast", breakfastRecipe);
+        } else {
+            System.out.println("Recette de petit-déjeuner introuvable !");
+        }
+        Recipe lunchRecipe = recipeRepository.findById("680453cb5d9c927a4365c2d1").orElse(null);
+        if (lunchRecipe != null) {
+            newPlan.addMeal("Lunch", lunchRecipe);
+        } else {
+            System.out.println("Recette de déjeuner introuvable !");
+        }
+        Recipe dinnerRecipe = recipeRepository.findById("680454cb5d9c927a4365c2d2").orElse(null);
+        if (dinnerRecipe != null) {
+            newPlan.addMeal("Dinner", dinnerRecipe);
+        } else {
+            System.out.println("Recette de dîner introuvable !");
+        }
+        newPlan.setDate(LocalDate.now());
+        newPlan.setCompleted(false); // Set completed to false for a new plan
         return dailyPlanRepository.save(newPlan);
     }
 

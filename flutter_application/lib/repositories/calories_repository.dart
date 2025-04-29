@@ -203,6 +203,21 @@ class CalorieRepository {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+//before last edit from claude 29/04/2025 06/07heure du matin :) ********************************
+/*
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -390,6 +405,133 @@ class CalorieRepository {
     } catch (e) {
       print('Error getting consumed meals: $e');
       throw Exception('Failed to load consumed meals: $e');
+    }
+  }
+}
+*/
+
+
+
+
+
+import 'package:flutter/material.dart';
+import '../models/calorie_model.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/api_service.dart';
+
+class CalorieRepository {
+  final ApiService _apiService = ApiService();
+  final String _userIdKey = 'user_id';
+
+  // Get the current user ID from shared preferences
+  Future<String> _getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Default ID for testing - replace with actual login flow
+    return prefs.getString(_userIdKey) ?? '6802a37e4ca8dd672d737e72';
+  }
+
+  // Get today's calorie data
+  Future<CalorieData> getTodayCalorieData() async {
+    try {
+      final userId = await _getUserId();
+
+      final response = await _apiService.dio.get(
+        '/api/users/$userId/daily-plan',
+      );
+
+      if (response.statusCode == 200) {
+        return CalorieData.fromMap(response.data);
+      } else {
+        throw Exception('Failed to load calorie data');
+      }
+    } catch (e) {
+      debugPrint('Error fetching calorie data: $e');
+      if (e is DioException) {
+        debugPrint('DioError: ${e.message}');
+        if (e.response != null) {
+          debugPrint('Response data: ${e.response?.data}');
+          debugPrint('Response status: ${e.response?.statusCode}');
+        }
+      }
+
+      // Return empty data in case of error
+      return CalorieData(
+        username: 'User',
+        date: DateTime.now().toString().split(' ')[0],
+        totalCalories: 0,
+        calorieGoal: 2000,
+        caloriePercentage: 0.0,
+        meals: [],
+      );
+    }
+  }
+
+  // Add a meal to today's plan
+  Future<bool> addMeal(String recipeId, String mealType) async {
+    try {
+      final userId = await _getUserId();
+
+      await _apiService.dio.post(
+        '/api/users/$userId/daily-plan/meals',
+        data: {'recipeId': recipeId, 'mealType': mealType},
+      );
+
+      return true;
+    } catch (e) {
+      debugPrint('Error adding meal: $e');
+      return false;
+    }
+  }
+
+  // Remove a meal from today's plan
+  Future<bool> removeMeal(String mealId) async {
+    try {
+      final userId = await _getUserId();
+
+      // Extract the meal type from the meal ID or pass it directly
+      // This depends on how your backend identifies meals
+      // For now, we'll use the mealId as the mealType since that's what our backend expects
+
+      await _apiService.dio.delete(
+        '/api/users/$userId/daily-plan/meals/$mealId',
+      );
+
+      return true;
+    } catch (e) {
+      debugPrint('Error removing meal: $e');
+      return false;
+    }
+  }
+
+  // Get calorie data for a specific date
+  Future<CalorieData> getCalorieDataForDate(DateTime date) async {
+    try {
+      final userId = await _getUserId();
+      final dateStr = date.toString().split(' ')[0]; // YYYY-MM-DD format
+
+      final response = await _apiService.dio.get(
+        '/api/users/$userId/daily-plan',
+        queryParameters: {'date': dateStr},
+      );
+
+      if (response.statusCode == 200) {
+        return CalorieData.fromMap(response.data);
+      } else {
+        throw Exception('Failed to load calorie data for date');
+      }
+    } catch (e) {
+      debugPrint('Error fetching calorie data for date: $e');
+
+      // Return empty data in case of error
+      return CalorieData(
+        username: 'User',
+        date: date.toString().split(' ')[0],
+        totalCalories: 0,
+        calorieGoal: 2000,
+        caloriePercentage: 0.0,
+        meals: [],
+      );
     }
   }
 }

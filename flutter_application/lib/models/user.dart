@@ -14,7 +14,7 @@ class User {
   final List<String> notificationIds;
   final List<String> objectifIds;
   final List<String> platFavoriIds;
-
+  final int calorieGoal;
   User({
     required this.id,
     required this.nom,
@@ -31,6 +31,7 @@ class User {
     required this.notificationIds,
     required this.objectifIds,
     required this.platFavoriIds,
+    this.calorieGoal = 2000,
   });
 
   // Convert JSON to User
@@ -55,6 +56,7 @@ class User {
       notificationIds: List<String>.from(json['notificationIds']),
       objectifIds: List<String>.from(json['objectifIds']),
       platFavoriIds: List<String>.from(json['platFavoriIds']),
+      calorieGoal: json['calorieGoal'] != null ? json['calorieGoal'] : 2000,
     );
   }
 
@@ -75,6 +77,11 @@ class User {
       'allergies': allergies,
       'maladies': maladies,
       'etatActivite': etatActivite,
+      'dashBoardQuotidienId': dashBoardQuotidienId,
+      'notificationIds': notificationIds,
+      'objectifIds': objectifIds,
+      'platFavoriIds': platFavoriIds,
+      'calorieGoal': calorieGoal,
     };
   }
  

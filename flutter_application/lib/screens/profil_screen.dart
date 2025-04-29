@@ -606,6 +606,48 @@ class ProfileScreen extends StatelessWidget {
           },
         ),
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(context),
+    );
+    
+  }
+    Widget _buildBottomNavigationBar(BuildContext context) {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Colors.green[800],
+      unselectedItemColor: Colors.grey,
+      currentIndex: 1, // Calories tab is selected
+      items: [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
+        BottomNavigationBarItem(
+          icon: CircleAvatar(
+            backgroundColor: Colors.green[800],
+            radius: 22,
+            child: Icon(Icons.camera_alt, color: Colors.white),
+          ),
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.fitness_center),
+          label: 'Activity',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      ],
+      onTap: (index) {
+        if (index == 4) {
+          // Navigate to Profile screen when tapping on Profile tab
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
+        } else if (index == 1) {
+          // Navigate to Calorie screen when tapping on Calorie tab
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CalorieScreen()),
+          );
+        }
+      },
     );
   }
 
@@ -768,6 +810,7 @@ class InfoItem extends StatelessWidget {
       },
     );
   }
+
 }
 
 class ProfilePic extends StatelessWidget {
@@ -793,7 +836,7 @@ class ProfilePic extends StatelessWidget {
                 // If you have a profile image from the user data, use it here
                 // Otherwise use a placeholder or default image
                 backgroundImage: const AssetImage(
-                  'assets/images/default_profile.png',
+                  'assets/images/profile.png',
                 ),
                 // If you don't have the image asset, use an icon instead:
                 // child: Icon(Icons.person, size: 60, color: Colors.white),

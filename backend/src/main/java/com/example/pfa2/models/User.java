@@ -28,9 +28,16 @@ public class User {
     private List<String> notificationIds = new ArrayList<>();
     private List<String> objectifIds = new ArrayList<>();
     private List<String> platFavoriIds = new ArrayList<>();
-
+    private int calorieGoal;
 
     public User() {
+    }
+    
+    public User(String nom, String email, String motDePasse) {
+        this.nom = nom;
+        this.email = email;
+        this.motDePasse = motDePasse;
+        this.calorieGoal = 2000; // Default calorie goal
     }
 
     // Getters and Setters
@@ -90,6 +97,14 @@ public class User {
         this.taille = taille;
     }
 
+    public int getCalorieGoal() {
+        return calorieGoal;
+    }
+
+    public void setCalorieGoal(int calorieGoal) {
+        this.calorieGoal = calorieGoal;
+    }
+    
     public Double getPoids() {
         return poids;
     }

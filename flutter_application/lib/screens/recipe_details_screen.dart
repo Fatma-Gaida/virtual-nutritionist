@@ -414,7 +414,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       _recipeRepository.saveFavoriteRecipeIds(favoriteIds);
     });
   }
-
+/*
   void _addToMealPlan() async {
     try {
       // Convert recipe to meal and add to today's calories
@@ -444,7 +444,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       );
     }
   }
-
+*/
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -471,7 +471,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
           ),
         ],
       ),
-      bottomSheet: _buildBottomButton(),
+      //bottomSheet: _buildBottomButton(),
     );
   }
 
@@ -703,6 +703,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
     );
   }
 
+/*
   Widget _buildBottomButton() {
     return Container(
       padding: EdgeInsets.all(16),
@@ -736,4 +737,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
       ),
     );
   }
+*/
+
+
 }

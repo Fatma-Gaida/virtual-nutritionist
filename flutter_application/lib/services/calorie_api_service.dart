@@ -118,6 +118,8 @@ class CalorieApiService {
   }
 }
 */
+/*
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../models/meal_model.dart';
 import '../models/calorie_model.dart';
@@ -125,6 +127,8 @@ import 'api_service.dart';
 
 class CalorieApiService {
   final ApiService _apiService = ApiService();
+*/
+/*
 
   // Get today's calorie data for user
   Future<Map<String, dynamic>> getTodayCalorieData(String userId) async {
@@ -146,6 +150,42 @@ class CalorieApiService {
       throw Exception('Failed to load calorie data: $e');
     }
   }
+*/
+/*
+
+  Future<Map<String, dynamic>> getTodayCalorieData(String userId) async {
+    try {
+      print('Fetching calorie data for user: $userId');
+      final response = await _apiService.get('/users/$userId/daily-plan');
+
+      print('Response status: ${response.statusCode}');
+      print('Response data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        return response.data is Map<String, dynamic>
+            ? response.data
+            : {'data': response.data};
+      } else if (response.statusCode == 404) {
+        return {'status': 'not_found'};
+      } else {
+        print('Server returned error code: ${response.statusCode}');
+        print('Response body: ${response.data}');
+        throw Exception('Server error: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('API call failed: $e');
+      // More detailed error logging
+      if (e is DioException) {
+        print('DioError type: ${e.type}');
+        print('DioError message: ${e.message}');
+        if (e.response != null) {
+          print('Error response data: ${e.response?.data}');
+        }
+      }
+      throw Exception('Failed to load calorie data: $e');
+    }
+  }
+
 
   // Get user details (for calorie goals)
   Future<Map<String, dynamic>> getUserDetails(String userId) async {
@@ -234,3 +274,4 @@ class CalorieApiService {
     }
   }
 }
+*/

@@ -74,7 +74,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
           Row(
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile.png'),
+                backgroundImage: AssetImage('assets/images/profie.png'),
                 radius: 24,
               ),
               SizedBox(width: 12),
@@ -551,7 +551,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
           Row(
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile.png'),
+                backgroundImage: AssetImage('assets/images/profie.png'),
                 radius: 24,
               ),
               SizedBox(width: 12),
@@ -677,7 +677,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
           Row(
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile.png'),
+                backgroundImage: AssetImage('assets/images/profie.png'),
                 radius: 24,
               ),
               SizedBox(width: 12),
@@ -873,6 +873,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/models/meal_model.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
 import 'package:flutter_application/screens/recipe_screen.dart';
+import 'package:flutter_application/screens/water_tracker_screen.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../models/calorie_model.dart';
 import '../repositories/Calories_repository.dart';
@@ -946,7 +947,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
           Row(
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile.png'),
+                backgroundImage: AssetImage('assets/images/profil.png'),
                 radius: 24,
               ),
               SizedBox(width: 12),
@@ -1152,14 +1153,20 @@ class _CalorieScreenState extends State<CalorieScreen> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.fitness_center),
-          label: 'Activity',
+          label: 'Water',
         ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
       ],
       onTap: (index) {
-        if (index == 1) {
+        if (index == 2) {
           // Refresh data when tapping on Calories tab
           _refreshData();
+        } else if (index == 3) {
+          // Navigate to Water screen when tapping on Profile tab
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WaterTrackerScreen()),
+          );
         } else if (index == 4) {
           // Navigate to Profile screen when tapping on Profile tab
           Navigator.push(
@@ -1167,6 +1174,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
             MaterialPageRoute(builder: (context) => ProfileScreen()),
           );
         }
+        //if index == 1 navigate to home
       },
     );
   }

@@ -79,7 +79,7 @@ class AppRoutes {
   static const String water = '/water';
   static const String recipes = '/recipes';
   static const String recipeDetails = '/recipe-details';
-  static const String camera = '/camera';
+  static const String camera = '/camera'; //this is going to be replaced by the chatbot screen
 }
 
 void main() {

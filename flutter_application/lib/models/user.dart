@@ -29,9 +29,9 @@ class User {
     this.maladies = const [],
     this.etatActivite,
     this.dashBoardQuotidienId,
-    required this.notificationIds,
-    required this.objectifIds,
-    required this.platFavoriIds,
+    this.notificationIds = const [],
+    this.objectifIds = const [],
+    this.platFavoriIds = const [],
     this.calorieGoal = 2000,
 
   

@@ -448,6 +448,7 @@ class ProfileMenu extends StatelessWidget {
 import 'package:flutter/material.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
+import 'package:flutter_application/screens/water_tracker_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import 'package:flutter_application/models/meal_model.dart';
@@ -629,9 +630,9 @@ class ProfileScreen extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.fitness_center),
-          label: 'Activity',
+          label: 'Water',
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        BottomNavigationBarItem(icon: Icon(Icons.water), label: 'Water'),
       ],
       onTap: (index) {
         if (index == 4) {
@@ -639,6 +640,12 @@ class ProfileScreen extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
+        } else if (index == 3) {
+          // Navigate to Calorie screen when tapping on Calorie tab
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => WaterTrackerScreen()),
           );
         } else if (index == 1) {
           // Navigate to Calorie screen when tapping on Calorie tab

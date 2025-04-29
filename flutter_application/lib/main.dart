@@ -73,6 +73,7 @@ import 'package:flutter_application/screens/water_tracker_screen.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
 import 'package:flutter_application/screens/login_screen.dart';
+import 'package:flutter_application/screens/chatbot_screen.dart';
 import 'package:flutter_application/providers/user_provider.dart';
 import 'package:flutter_application/services/auth_service.dart';
 import 'package:flutter_application/services/api_service.dart';
@@ -85,7 +86,8 @@ class AppRoutes {
   static const String water = '/water';
   static const String recipes = '/recipes';
   static const String recipeDetails = '/recipe-details';
-  static const String camera = '/camera'; //this is going to be replaced by the chatbot screen
+  //static const String camera = '/camera'; //this is going to be replaced by the chatbot screen
+  static const String chatbot = '/chatbot'; 
 }
 
 void main() {
@@ -156,6 +158,10 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => RecipeDetailsScreen(recipe: recipe),
             );
+          case AppRoutes.chatbot:
+            return MaterialPageRoute(
+              builder: (_) => const MainNavigationScreen(initialIndex: 1),
+            );
           default:
             return MaterialPageRoute(
               builder:
@@ -188,6 +194,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     const WaterTrackerScreen(),
     const SizedBox(), // Placeholder for camera button
     const ProfileScreen(),
+    //const ChatbotScreen(chatbotId: chatbotId),
   ];
 
   @override

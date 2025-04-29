@@ -99,11 +99,11 @@ class ApiService {
     );
 
     final uri = stringQueryParams != null
-        ? Uri.parse('${_dio.options.baseUrl}$path').replace(queryParameters: stringQueryParams)
-        : Uri.parse('${_dio.options.baseUrl}$path');
+        ? Uri.parse('${dio.options.baseUrl}$path').replace(queryParameters: stringQueryParams)
+        : Uri.parse('${dio.options.baseUrl}$path');
     
     print('Constructed PUT request URL: $uri');
-    final response = await _dio.put(path, queryParameters: safeParams);
+    final response = await dio.put(path, queryParameters: safeParams);
     print('PUT request URL (after response): ${response.requestOptions.uri}');
     return response;
   } catch (e) {

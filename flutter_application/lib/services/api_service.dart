@@ -86,6 +86,32 @@ class ApiService {
     }
   }
 
+   Future<Response> put(String path, dynamic queryParameters) async {
+  try {
+    // Convert query parameters to Map<String, dynamic>
+    final Map<String, dynamic>? safeParams = queryParameters?.map<String, dynamic>(
+      (key, value) => MapEntry(key.toString(), value),
+    );
+
+    // Log the request URL before sending
+    final stringQueryParams = safeParams?.map(
+      (key, value) => MapEntry(key, value.toString())
+    );
+
+    final uri = stringQueryParams != null
+        ? Uri.parse('${_dio.options.baseUrl}$path').replace(queryParameters: stringQueryParams)
+        : Uri.parse('${_dio.options.baseUrl}$path');
+    
+    print('Constructed PUT request URL: $uri');
+    final response = await _dio.put(path, queryParameters: safeParams);
+    print('PUT request URL (after response): ${response.requestOptions.uri}');
+    return response;
+  } catch (e) {
+    print('PUT request error: $e');
+    throw Exception('PUT request failed: $e');
+  }
+}
+
 
     Future<Response> delete(String path) async {
     try {

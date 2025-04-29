@@ -15,6 +15,7 @@ class User {
   final List<String> objectifIds;
   final List<String> platFavoriIds;
   final int calorieGoal;
+
   User({
     required this.id,
     required this.nom,
@@ -32,7 +33,17 @@ class User {
     required this.objectifIds,
     required this.platFavoriIds,
     this.calorieGoal = 2000,
+
+  
+
   });
+   Map<String, dynamic> toRegistrationJson() {
+    return {
+      'nom': nom,
+      'email': email,
+      'motDePasse': motDePasse,
+    };
+  }
 
   // Convert JSON to User
    factory User.fromJson(Map<String, dynamic> json) {

@@ -129,7 +129,7 @@ public class RecipeController {
     }
     
     //confirmer la consommation d'un plat
-    @PostMapping("/consumed/{userId}/{recipeId}")
+    /*@PostMapping("/consumed/{userId}/{recipeId}")
     public ResponseEntity<PlatsConsommes> addConsumedRecipe(
             @PathVariable String userId,
             @PathVariable String recipeId,
@@ -140,7 +140,7 @@ public class RecipeController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    
+    */
     //recuperer le total dee caloris consommes par date 
     @GetMapping("/consumed/{userId}/calories/{date}")
     public ResponseEntity<Integer> getTotalCaloriesConsumedByDate(

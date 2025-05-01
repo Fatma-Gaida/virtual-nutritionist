@@ -63,6 +63,18 @@ public class UserService {
         return userRepository.findById(idU);
     }
 
+
+    // Mettre à jour l'objectif de calories
+    public User updateCalorieGoal(String userId, int caloriesObjectif) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setCalorieGoal(caloriesObjectif);
+            return userRepository.save(user);
+        }
+        throw new RuntimeException("Utilisateur non trouvé");
+    }
+
     public DailyPlan getUserDailyPlan(String userId) {
         // Try to find an existing plan for today
         Optional<DailyPlan> existingPlan = dailyPlanRepository.findByUserIdAndDate(userId, LocalDate.now());

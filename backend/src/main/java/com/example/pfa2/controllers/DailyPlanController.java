@@ -48,7 +48,7 @@ public class DailyPlanController {
 }
     */
 
-    package com.example.pfa2.controllers;
+package com.example.pfa2.controllers;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -86,7 +86,7 @@ public class DailyPlanController {
     @Autowired
     private UserRepository userRepository;
 
-    /**
+    /*
      * Get the daily plan for a user
      * If date parameter is provided, get the plan for that date
      * Otherwise, get today's plan
@@ -98,9 +98,7 @@ public class DailyPlanController {
 
         // Verify user exists
         Optional<User> userOpt = userRepository.findById(userId);
-        if (!userOpt.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
+        
 
         User user = userOpt.get();
 

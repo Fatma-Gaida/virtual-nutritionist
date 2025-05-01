@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.example.pfa2.models.PlatsConsommes;
@@ -31,6 +32,13 @@ public class RecipeService {
     
     @Autowired
     private UserRepository userRepository;
+
+    private final DashboardQuotidienService dashboardService;
+
+    @Autowired
+    public RecipeService(@Lazy DashboardQuotidienService dashboardService) {
+        this.dashboardService = dashboardService;
+    }
     
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
@@ -123,13 +131,34 @@ public class RecipeService {
         return platsConsommesRepository.findByUserIdAndDateConsommationBetween(userId, startOfDay, endOfDay);
     }
     
-    public PlatsConsommes addConsumedRecipe(String userId, String recipeId, String repas) {
+    /*public PlatsConsommes addConsumedRecipe(String userId, String recipeId, String repas) {
         Optional<Recipe> recipeOpt = recipeRepository.findById(recipeId);
         
         if (recipeOpt.isPresent()) {
             Recipe recipe = recipeOpt.get();
             PlatsConsommes platsConsommes = new PlatsConsommes(recipe, userId, repas);
             return platsConsommesRepository.save(platsConsommes);
+        }
+        return null;
+    }*/
+
+    public PlatsConsommes addConsumedRecipe(String userId, String recipeId, String repas) {
+        Optional<Recipe> recipeOpt = recipeRepository.findById(recipeId);
+        
+        if (recipeOpt.isPresent()) {
+            Recipe recipe = recipeOpt.get();
+            PlatsConsommes platsConsommes = new PlatsConsommes(recipe, userId, repas);
+            PlatsConsommes saved = platsConsommesRepository.save(platsConsommes);
+            
+            // Mettre à jour le dashboard quotidien
+            try {
+                dashboardService.mettreAJourCaloriesApresConsommation(userId, recipeId);
+            } catch (Exception e) {
+                // Logging de l'erreur, mais on ne bloque pas l'ajout du plat consommé
+                System.err.println("Erreur lors de la mise à jour du dashboard: " + e.getMessage());
+            }
+            
+            return saved;
         }
         return null;
     }

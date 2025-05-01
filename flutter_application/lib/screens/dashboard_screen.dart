@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
-import 'package:flutter_application/screens/recipe_screen.dart';
 import 'package:flutter_application/screens/water_tracker_screen.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 

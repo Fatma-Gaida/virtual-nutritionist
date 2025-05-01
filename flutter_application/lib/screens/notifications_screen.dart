@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_application/screens/calorie_screen.dart';
-import 'package:flutter_application/screens/profil_screen.dart';
-import 'package:flutter_application/screens/water_tracker_screen.dart';
-
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
@@ -13,7 +9,7 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   // Static data for notification screen
-  final String username = "Fatma Zahra";
+  final String username = "fatma Zahra";
   final String date = "May 1, 2025";
   
   // Example notifications data
@@ -26,7 +22,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
       iconColor: Colors.amber,
       isNew: true,
     ),
-   
+    NotificationItem(
+      title: 'Streak Achievement',
+      message: 'Congratulations! You\'ve tracked your calories for 7 days in a row.',
+      time: '3h ago',
+      icon: Icons.local_fire_department,
+      iconColor: Colors.orange,
+      isNew: true,
+    ),
+    
     NotificationItem(
       title: 'Water Reminder',
       message: 'Don\'t forget to drink your water! You\'re 0.5L behind today\'s goal.',
@@ -35,15 +39,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
       iconColor: Colors.blue,
       isNew: false,
     ),
-    
-    NotificationItem(
-      title: 'Motivation',
-      message: 'Remember: Every small step counts towards your goal!',
-      time: '2d ago',
-      icon: Icons.emoji_events,
-      iconColor: Colors.purple,
-      isNew: false,
-    ),
+   NotificationItem(
+  title: 'Hydration Streak',
+  message: 'You met your water goal 3 days in a row. Keep going!',
+  time: '1d ago',
+  icon: Icons.local_drink,
+  iconColor: Colors.cyan,
+  isNew: false,
+),
    
   ];
 
@@ -81,7 +84,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+     
     );
   }
 
@@ -438,45 +441,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-   Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: const Color.fromRGBO(46, 125, 50, 1),
-      unselectedItemColor: Colors.grey,
-      currentIndex: 0, // Home/Dashboard tab is selected
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.water_drop),
-          label: 'Water',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
-      ],
-      onTap: (index) {
-        if (index == 1) {
-          // Navigate to Calories screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CalorieScreen()),
-          );
-        } else if (index == 3) {
-          // Navigate to Water screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WaterTrackerScreen()),
-          );
-        } else if (index == 4) {
-          // Navigate to Profile screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
-          );
-        }
-      },
-    );
-  }
+
 }
 
 class NotificationItem {

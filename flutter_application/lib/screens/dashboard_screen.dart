@@ -13,7 +13,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   // Static data for dashboard
-  final String username = "Alex Smith";
+  final String username = "Fatma Zahra";
   final String date = "May 1, 2025";
   final int goalWeight = 70; // Final goal weight
   final double currentWeight = 75.0; // Current weight (Week 7)
@@ -61,7 +61,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      
     );
   }
 
@@ -524,47 +524,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: const Color.fromRGBO(46, 125, 50, 1),
-      unselectedItemColor: Colors.grey,
-      currentIndex: 0, // Home/Dashboard tab is selected
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.water_drop),
-          label: 'Water',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
-      ],
-      onTap: (index) {
-        if (index == 1) {
-          // Navigate to Calories screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CalorieScreen()),
-          );
-        } else if (index == 3) {
-          // Navigate to Water screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WaterTrackerScreen()),
-          );
-        } else if (index == 4) {
-          // Navigate to Profile screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
-          );
-        }
-      },
-    );
   }
-}
+
 
 // Custom painters for charts
 

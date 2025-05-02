@@ -589,7 +589,7 @@ class _RecipesScreenState extends State<RecipesScreen>
           },
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green[800],
         child: Icon(Icons.add, color: Colors.white),
@@ -905,32 +905,5 @@ class _RecipesScreenState extends State<RecipesScreen>
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.green[800],
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1, // Calories tab is selected
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.restaurant_menu),
-          label: 'Calories',
-        ),
-        BottomNavigationBarItem(
-          icon: CircleAvatar(
-            backgroundColor: Colors.green[800],
-            radius: 22,
-            child: Icon(Icons.camera_alt, color: Colors.white),
-          ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center),
-          label: 'Activity',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
-    );
-  }
+
 }

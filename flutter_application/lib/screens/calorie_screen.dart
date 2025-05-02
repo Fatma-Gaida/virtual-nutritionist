@@ -934,7 +934,7 @@ class _CalorieScreenState extends State<CalorieScreen> {
           },
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+     
     );
   }
 
@@ -1134,48 +1134,4 @@ class _CalorieScreenState extends State<CalorieScreen> {
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.green[800],
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1, // Calories tab is selected
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
-        BottomNavigationBarItem(
-          icon: CircleAvatar(
-            backgroundColor: Colors.green[800],
-            radius: 22,
-            child: Icon(Icons.camera_alt, color: Colors.white),
-          ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center),
-          label: 'Water',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
-      onTap: (index) {
-        if (index == 2) {
-          // Refresh data when tapping on Calories tab
-          _refreshData();
-        } else if (index == 3) {
-          // Navigate to Water screen when tapping on Profile tab
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => WaterTrackerScreen()),
-          );
-        } else if (index == 4) {
-          // Navigate to Profile screen when tapping on Profile tab
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
-          );
-        }
-        //if index == 1 navigate to home
-      },
-    );
-  }
 }

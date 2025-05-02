@@ -4,8 +4,13 @@ import 'package:flutter_application/screens/calorie_screen.dart';
 import 'package:flutter_application/screens/dashboard_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
 import 'package:flutter_application/screens/water_tracker_screen.dart'; 
-
+import 'package:flutter_application/screens/recipe_screen.dart';
+import 'package:flutter_application/screens/water_tracker_screen.dart'; 
 import 'package:flutter_application/screens/notifications_screen.dart'; 
+import 'package:flutter_application/screens/recipe_details_screen.dart'; 
+ 
+import 'package:flutter_application/models/recipe_model.dart'; 
+
 
 class AppRoutes {
   static const String login = '/login';
@@ -15,6 +20,9 @@ class AppRoutes {
   static const String water = '/water';
   static const String signup = '/signup';
    static const String notification = '/notification';
+  static const String recipes = '/recipes';
+  static const String recipeDetails = '/recipe-details';
+   static const String recipe= '/recipe';
 }
 
 class AppRouter {
@@ -39,6 +47,15 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => RootNavigationPage(initialIndex: 3, chatbotId: chatbotId),
         );
+        case AppRoutes.recipe:
+        return MaterialPageRoute(
+          builder: (_) => RootNavigationPage(initialIndex: 3, chatbotId: chatbotId),
+        );
+        case AppRoutes.recipeDetails:
+            final recipe = settings.arguments as Recipe;
+            return MaterialPageRoute(
+              builder: (_) => RecipeDetailsScreen(recipe: recipe),
+            );
         
       
       // Add other routes as needed

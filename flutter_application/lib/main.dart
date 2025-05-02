@@ -71,6 +71,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application/models/recipe_model.dart';
+import 'package:flutter_application/screens/notifications_screen.dart';
 import 'package:flutter_application/screens/recipe_details_screen.dart';
 import 'package:flutter_application/screens/recipe_screen.dart';
 import 'package:flutter_application/screens/water_tracker_screen.dart';
@@ -93,9 +94,9 @@ class AppRoutes {
   static const String water = '/water';
   static const String recipes = '/recipes';
   static const String recipeDetails = '/recipe-details';
-  //static const String camera = '/camera'; //this is going to be replaced by the chatbot screen
   static const String chatbot = '/chatbot'; 
-    static const String dashboard ='/dashboard'; 
+  static const String dashboard ='/dashboard'; 
+  static const String notification ='/notification'; 
 }
 
 void main() {
@@ -131,6 +132,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +158,9 @@ class MyApp extends StatelessWidget {
       routes: {
         AppRoutes.login: (context) => const LoginScreen(),
         AppRoutes.chatbot: (context) => const ChatbotScreen(chatbotId: '1'),
+        AppRoutes.notification: (context) => const NotificationScreen(),
+        AppRoutes.recipes: (context) => const RecipesScreen(),
+        AppRoutes.calories: (context) => const CalorieScreen(),
       },
     );
   }

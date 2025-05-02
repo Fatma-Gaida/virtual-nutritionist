@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'water_settings_screen.dart';
 import 'water_history_screen.dart'; // New import for the history screen
 
-
 class WaterTrackerScreen extends StatefulWidget {
   const WaterTrackerScreen({super.key});
 
@@ -79,33 +78,37 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
     double percentage = currentIntake / target;
     int remaining = target - currentIntake;
 
+    // Define color scheme to match nutrition app
+    final primaryGreen = Color(0xFF4CAF50);
+    final darkGreen = Color(0xFF388E3C);
+    final lightBlue = Color(0xFF81D4FA); // Light blue for water
+
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.green[800],
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'rappel de boire de l\'eau',
+          'Water Intake',
           style: TextStyle(color: Colors.white),
         ),
         actions: [
           // History button - navigates to the dedicated history screen
           IconButton(
             icon: const Icon(Icons.history, color: Colors.white),
-            tooltip: 'Historique',
+            tooltip: 'History',
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder:
-                      (context) => WaterHistoryScreen(
-                        intakeHistory: intakeHistory,
-                        onRemoveIntake: removeWaterIntake,
-                      ),
+                  builder: (context) => WaterHistoryScreen(
+                    intakeHistory: intakeHistory,
+                    onRemoveIntake: removeWaterIntake,
+                  ),
                 ),
               );
             },
@@ -137,20 +140,20 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                   children: [
                     Text(
                       '$currentIntake',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: primaryGreen,
                         fontSize: 48,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'ml',
-                      style: TextStyle(color: Colors.white70, fontSize: 24),
+                      style: TextStyle(color: darkGreen, fontSize: 24),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'objectif de boisson d\'eau: ${target}ml',
-                      style: const TextStyle(color: Colors.white70),
+                      'Water Goal: ${target}ml',
+                      style: TextStyle(color: Colors.grey[700]),
                     ),
                     const SizedBox(height: 20),
                     // Improved glass with water level and enhanced wave effect
@@ -168,15 +171,15 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                                 width: 100,
                                 height: 180,
                                 decoration: BoxDecoration(
-                                  color: Colors.white10,
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
-                                    color: Colors.white30,
+                                    color: Colors.blue,
                                     width: 2,
                                   ),
                                 ),
                               ),
-                              // Water level with enhanced wave effect
+                              // Water level with enhanced wave effect - light blue water
                               ClipPath(
                                 clipper: EnhancedWaveClipper(
                                   animation: _waveAnimation.value,
@@ -186,24 +189,22 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                                   width: 100,
                                   height: 180,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.7),
+                                    color: lightBlue.withOpacity(0.7),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
                               ),
                               // Percentage text
                               Positioned(
-                                bottom:
-                                    percentage > 0.1
-                                        ? 180 * percentage / 2 - 10
-                                        : 5,
+                                bottom: percentage > 0.1
+                                    ? 180 * percentage / 2 - 10
+                                    : 5,
                                 child: Text(
                                   '${(percentage * 100).toInt()}%',
                                   style: TextStyle(
-                                    color:
-                                        percentage > 0.2
-                                            ? Colors.blue
-                                            : Colors.white,
+                                    color: percentage > 0.2
+                                        ? primaryGreen
+                                        : Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                   ),
@@ -215,31 +216,30 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                       },
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'boire de l\'eau : ${(percentage * 100).toInt()}% de la cible',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
+                    
                     const SizedBox(height: 20),
                     // Improved water intake buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildWaterButton(100, isButtonDisabled(100)),
+                        _buildWaterButton(
+                            100, isButtonDisabled(100), lightBlue, primaryGreen),
                         const SizedBox(width: 20),
-                        _buildWaterButton(200, isButtonDisabled(200)),
+                        _buildWaterButton(
+                            200, isButtonDisabled(200), lightBlue, primaryGreen),
                         const SizedBox(width: 20),
-                        _buildWaterButton(400, isButtonDisabled(400)),
+                        _buildWaterButton(
+                            400, isButtonDisabled(400), lightBlue, primaryGreen),
                       ],
                     ),
                     const SizedBox(height: 20),
                     // Add custom water intake button
                     ElevatedButton(
-                      onPressed:
-                          remaining > 0
-                              ? () => _showAddCustomIntakeDialog()
-                              : null,
+                      onPressed: remaining > 0
+                          ? () => _showAddCustomIntakeDialog(primaryGreen)
+                          : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueGrey.shade700,
+                        backgroundColor: darkGreen,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 12,
@@ -254,7 +254,7 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                           Icon(Icons.add, color: Colors.white),
                           SizedBox(width: 8),
                           Text(
-                            'Ajouter une prise d\'eau',
+                            'Add Water Intake',
                             style: TextStyle(color: Colors.white),
                           ),
                         ],
@@ -267,21 +267,20 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder:
-                                (context) => WaterHistoryScreen(
-                                  intakeHistory: intakeHistory,
-                                  onRemoveIntake: removeWaterIntake,
-                                ),
+                            builder: (context) => WaterHistoryScreen(
+                              intakeHistory: intakeHistory,
+                              onRemoveIntake: removeWaterIntake,
+                            ),
                           ),
                         );
                       },
                       icon: const Icon(Icons.history, color: Colors.white),
                       label: const Text(
-                        'Voir l\'historique',
+                        'View History',
                         style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade800,
+                        backgroundColor: darkGreen,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 12,
@@ -301,7 +300,8 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
     );
   }
 
-  Widget _buildWaterButton(int amount, bool disabled) {
+  Widget _buildWaterButton(
+      int amount, bool disabled, Color waterColor, Color buttonColor) {
     return InkWell(
       onTap: disabled ? null : () => addWaterIntake(amount),
       child: Column(
@@ -321,12 +321,14 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                 child: Stack(
                   alignment: Alignment.bottomCenter,
                   children: [
-                    // Water in glass
+                    // Water in glass - using light blue color
                     Container(
                       width: 60,
                       height: 60 * 0.7, // 70% full
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.5),
+                        color: disabled
+                            ? Colors.grey.withOpacity(0.3)
+                            : waterColor.withOpacity(0.5),
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(7),
                           bottomRight: Radius.circular(7),
@@ -339,7 +341,7 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
               // Add icon
               Icon(
                 Icons.add,
-                color: disabled ? Colors.grey : Colors.blue,
+                color: disabled ? Colors.grey : buttonColor,
                 size: 24,
               ),
             ],
@@ -347,8 +349,8 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
           const SizedBox(height: 6),
           Text(
             '${amount}ml',
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Colors.grey,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -357,74 +359,80 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
     );
   }
 
-  void _showAddCustomIntakeDialog() {
+  void _showAddCustomIntakeDialog(Color primaryColor) {
     int customAmount = 100;
 
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Ajouter la consommation d\'eau'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
+      builder: (context) => AlertDialog(
+        title: Text('Add Water Intake',
+            style: TextStyle(color: primaryColor)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Enter amount in ml:'),
+            const SizedBox(height: 16),
+            TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: primaryColor, width: 2),
+                ),
+                hintText: 'ml',
+              ),
+              controller: TextEditingController(text: '100'),
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  customAmount = int.tryParse(value) ?? 100;
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Text('Entrez la quantité en ml:'),
-                const SizedBox(height: 16),
-                TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'ml',
-                  ),
-                  controller: TextEditingController(text: '100'),
-                  onChanged: (value) {
-                    if (value.isNotEmpty) {
-                      customAmount = int.tryParse(value) ?? 100;
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildQuickAmountButton(100, (val) {
-                      customAmount = val;
-                      (context as Element).markNeedsBuild();
-                    }),
-                    _buildQuickAmountButton(200, (val) {
-                      customAmount = val;
-                      (context as Element).markNeedsBuild();
-                    }),
-                    _buildQuickAmountButton(300, (val) {
-                      customAmount = val;
-                      (context as Element).markNeedsBuild();
-                    }),
-                  ],
-                ),
+                _buildQuickAmountButton(100, (val) {
+                  customAmount = val;
+                  (context as Element).markNeedsBuild();
+                }, primaryColor),
+                _buildQuickAmountButton(200, (val) {
+                  customAmount = val;
+                  (context as Element).markNeedsBuild();
+                }, primaryColor),
+                _buildQuickAmountButton(300, (val) {
+                  customAmount = val;
+                  (context as Element).markNeedsBuild();
+                }, primaryColor),
               ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Annuler'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  addWaterIntake(customAmount);
-                  Navigator.pop(context);
-                },
-                child: const Text('Ajouter'),
-              ),
-            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey)),
           ),
+          ElevatedButton(
+            onPressed: () {
+              addWaterIntake(customAmount);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+            ),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildQuickAmountButton(int value, Function(int) onSelected) {
+  Widget _buildQuickAmountButton(int value, Function(int) onSelected, Color primaryColor) {
     return ElevatedButton(
       onPressed: () => onSelected(value),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
+        backgroundColor: primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       child: Text('${value}ml'),
@@ -484,8 +492,7 @@ class EnhancedWaveClipper extends CustomClipper<Path> {
       // Create multiple wave points for a more realistic effect - ensure clipping stays in bounds
       for (double i = width; i >= 0; i -= 10) {
         final dx = i;
-        final dy =
-            waterHeight +
+        final dy = waterHeight +
             waveHeight * math.sin((animation * 360 - i) / 180 * math.pi);
 
         // Ensure dy is always within the container bounds

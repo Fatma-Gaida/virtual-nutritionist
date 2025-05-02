@@ -148,13 +148,14 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
           }
         }
       };
-
+      /*
       // Simulate loading delay (remove if unnecessary)
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: ), () {
         if (!_hasError) {
           setState(() => _isLoading = false);
         }
       });
+      */
     } catch (e) {
       setState(() {
         _hasError = true;
@@ -165,6 +166,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
 
   // List of screens to display
   final List<Widget> _screens = [
+    const LoginScreen(),
     const DashboardScreen(),
     const CalorieScreen(),
     const WaterTrackerScreen(),
@@ -182,15 +184,18 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
     String route;
     switch (index) {
       case 0:
-        route = AppRoutes.dashboard;
+        route = AppRoutes.login;
         break;
       case 1:
-        route = AppRoutes.calories;
+        route = AppRoutes.dashboard;
         break;
       case 2:
-        route = AppRoutes.water;
+        route = AppRoutes.calories;
         break;
       case 3:
+        route = AppRoutes.water;
+        break;
+      case 4:
         route = AppRoutes.profile;
         break;
       default:

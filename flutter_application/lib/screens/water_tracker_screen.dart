@@ -105,10 +105,11 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => WaterHistoryScreen(
-                    intakeHistory: intakeHistory,
-                    onRemoveIntake: removeWaterIntake,
-                  ),
+                  builder:
+                      (context) => WaterHistoryScreen(
+                        intakeHistory: intakeHistory,
+                        onRemoveIntake: removeWaterIntake,
+                      ),
                 ),
               );
             },
@@ -134,174 +135,202 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
         child: Column(
           children: [
             Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$currentIntake',
-                      style: TextStyle(
-                        color: primaryGreen,
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$currentIntake',
+                        style: TextStyle(
+                          color: primaryGreen,
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'ml',
-                      style: TextStyle(color: darkGreen, fontSize: 24),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Water Goal: ${target}ml',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(height: 20),
-                    // Improved glass with water level and enhanced wave effect
-                    AnimatedBuilder(
-                      animation: _waveAnimation,
-                      builder: (context, child) {
-                        return SizedBox(
-                          height: 200,
-                          width: 120,
-                          child: Stack(
-                            alignment: Alignment.bottomCenter,
-                            children: [
-                              // Empty glass
-                              Container(
-                                width: 100,
-                                height: 180,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: Colors.blue,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                              // Water level with enhanced wave effect - light blue water
-                              ClipPath(
-                                clipper: EnhancedWaveClipper(
-                                  animation: _waveAnimation.value,
-                                  fillPercentage: percentage,
-                                ),
-                                child: Container(
+                      Text(
+                        'ml',
+                        style: TextStyle(color: darkGreen, fontSize: 24),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Water Goal: ${target}ml',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      const SizedBox(height: 20),
+                      // Improved glass with water level and enhanced wave effect
+                      AnimatedBuilder(
+                        animation: _waveAnimation,
+                        builder: (context, child) {
+                          return SizedBox(
+                            height: 200,
+                            width: 120,
+                            child: Stack(
+                              alignment: Alignment.bottomCenter,
+                              children: [
+                                // Empty glass
+                                Container(
                                   width: 100,
                                   height: 180,
                                   decoration: BoxDecoration(
-                                    color: lightBlue.withOpacity(0.7),
+                                    color: Colors.white,
                                     borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Colors.blue,
+                                      width: 2,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              // Percentage text
-                              Positioned(
-                                bottom: percentage > 0.1
-                                    ? 180 * percentage / 2 - 10
-                                    : 5,
-                                child: Text(
-                                  '${(percentage * 100).toInt()}%',
-                                  style: TextStyle(
-                                    color: percentage > 0.2
-                                        ? primaryGreen
-                                        : Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
+                                // Water level with enhanced wave effect - light blue water
+                                ClipPath(
+                                  clipper: EnhancedWaveClipper(
+                                    animation: _waveAnimation.value,
+                                    fillPercentage: percentage,
+                                  ),
+                                  child: Container(
+                                    width: 100,
+                                    height: 180,
+                                    decoration: BoxDecoration(
+                                      color: lightBlue.withOpacity(0.7),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    
-                    const SizedBox(height: 20),
-                    // Improved water intake buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildWaterButton(
-                            100, isButtonDisabled(100), lightBlue, primaryGreen),
-                        const SizedBox(width: 20),
-                        _buildWaterButton(
-                            200, isButtonDisabled(200), lightBlue, primaryGreen),
-                        const SizedBox(width: 20),
-                        _buildWaterButton(
-                            400, isButtonDisabled(400), lightBlue, primaryGreen),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    // Add custom water intake button
-                    ElevatedButton(
-                      onPressed: remaining > 0
-                          ? () => _showAddCustomIntakeDialog(primaryGreen)
-                          : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: darkGreen,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                                // Percentage text
+                                Positioned(
+                                  bottom:
+                                      percentage > 0.1
+                                          ? 180 * percentage / 2 - 10
+                                          : 5,
+                                  child: Text(
+                                    '${(percentage * 100).toInt()}%',
+                                    style: TextStyle(
+                                      color:
+                                          percentage > 0.2
+                                              ? primaryGreen
+                                              : Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.add, color: Colors.white),
-                          SizedBox(width: 8),
-                          Text(
-                            'Add Water Intake',
-                            style: TextStyle(color: Colors.white),
+                      const SizedBox(height: 20),
+                      // Improved water intake buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildWaterButton(
+                            100,
+                            isButtonDisabled(100),
+                            lightBlue,
+                            primaryGreen,
+                          ),
+                          const SizedBox(width: 20),
+                          _buildWaterButton(
+                            200,
+                            isButtonDisabled(200),
+                            lightBlue,
+                            primaryGreen,
+                          ),
+                          const SizedBox(width: 20),
+                          _buildWaterButton(
+                            400,
+                            isButtonDisabled(400),
+                            lightBlue,
+                            primaryGreen,
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    // View history button - directs to history screen
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => WaterHistoryScreen(
-                              intakeHistory: intakeHistory,
-                              onRemoveIntake: removeWaterIntake,
+                      const SizedBox(height: 20),
+                      // Add custom water intake button
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: ElevatedButton(
+                          onPressed:
+                              remaining > 0
+                                  ? () =>
+                                      _showAddCustomIntakeDialog(primaryGreen)
+                                  : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: darkGreen,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                        );
-                      },
-                      icon: const Icon(Icons.history, color: Colors.white),
-                      label: const Text(
-                        'View History',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: darkGreen,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.add, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                'Add Water Intake',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      // View history button - directs to history screen
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => WaterHistoryScreen(
+                                    intakeHistory: intakeHistory,
+                                    onRemoveIntake: removeWaterIntake,
+                                  ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.history, color: Colors.white),
+                        label: const Text(
+                          'View History',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: darkGreen,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                      // Add spacing at bottom to avoid content being hidden behind navigation bar
+                      const SizedBox(height: 70),
+                    ],
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
+      // Removed the bottom navigation bar from this page as it might be provided by a parent widget
     );
   }
 
   Widget _buildWaterButton(
-      int amount, bool disabled, Color waterColor, Color buttonColor) {
+    int amount,
+    bool disabled,
+    Color waterColor,
+    Color buttonColor,
+  ) {
     return InkWell(
       onTap: disabled ? null : () => addWaterIntake(amount),
       child: Column(
@@ -326,9 +355,10 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                       width: 60,
                       height: 60 * 0.7, // 70% full
                       decoration: BoxDecoration(
-                        color: disabled
-                            ? Colors.grey.withOpacity(0.3)
-                            : waterColor.withOpacity(0.5),
+                        color:
+                            disabled
+                                ? Colors.grey.withOpacity(0.3)
+                                : waterColor.withOpacity(0.5),
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(7),
                           bottomRight: Radius.circular(7),
@@ -349,10 +379,7 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
           const SizedBox(height: 6),
           Text(
             '${amount}ml',
-            style: TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -364,71 +391,76 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Add Water Intake',
-            style: TextStyle(color: primaryColor)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Enter amount in ml:'),
-            const SizedBox(height: 16),
-            TextField(
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: primaryColor, width: 2),
-                ),
-                hintText: 'ml',
-              ),
-              controller: TextEditingController(text: '100'),
-              onChanged: (value) {
-                if (value.isNotEmpty) {
-                  customAmount = int.tryParse(value) ?? 100;
-                }
-              },
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Add Water Intake',
+              style: TextStyle(color: primaryColor),
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildQuickAmountButton(100, (val) {
-                  customAmount = val;
-                  (context as Element).markNeedsBuild();
-                }, primaryColor),
-                _buildQuickAmountButton(200, (val) {
-                  customAmount = val;
-                  (context as Element).markNeedsBuild();
-                }, primaryColor),
-                _buildQuickAmountButton(300, (val) {
-                  customAmount = val;
-                  (context as Element).markNeedsBuild();
-                }, primaryColor),
+                const Text('Enter amount in ml:'),
+                const SizedBox(height: 16),
+                TextField(
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: primaryColor, width: 2),
+                    ),
+                    hintText: 'ml',
+                  ),
+                  controller: TextEditingController(text: '100'),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      customAmount = int.tryParse(value) ?? 100;
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildQuickAmountButton(100, (val) {
+                      customAmount = val;
+                      (context as Element).markNeedsBuild();
+                    }, primaryColor),
+                    _buildQuickAmountButton(200, (val) {
+                      customAmount = val;
+                      (context as Element).markNeedsBuild();
+                    }, primaryColor),
+                    _buildQuickAmountButton(300, (val) {
+                      customAmount = val;
+                      (context as Element).markNeedsBuild();
+                    }, primaryColor),
+                  ],
+                ),
               ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  addWaterIntake(customAmount);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+                child: const Text('Add'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              addWaterIntake(customAmount);
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primaryColor,
-            ),
-            child: const Text('Add'),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildQuickAmountButton(int value, Function(int) onSelected, Color primaryColor) {
+  Widget _buildQuickAmountButton(
+    int value,
+    Function(int) onSelected,
+    Color primaryColor,
+  ) {
     return ElevatedButton(
       onPressed: () => onSelected(value),
       style: ElevatedButton.styleFrom(
@@ -440,6 +472,15 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
   }
 }
 
+/*
+// Class for water intake history - make sure this is defined somewhere
+class WaterIntake {
+  final int amount;
+  final DateTime time;
+
+  WaterIntake({required this.amount, required this.time});
+}
+*/
 // Modified custom clipper for the wave effect - ensuring clipping is bounded
 class EnhancedWaveClipper extends CustomClipper<Path> {
   final double animation;
@@ -492,7 +533,8 @@ class EnhancedWaveClipper extends CustomClipper<Path> {
       // Create multiple wave points for a more realistic effect - ensure clipping stays in bounds
       for (double i = width; i >= 0; i -= 10) {
         final dx = i;
-        final dy = waterHeight +
+        final dy =
+            waterHeight +
             waveHeight * math.sin((animation * 360 - i) / 180 * math.pi);
 
         // Ensure dy is always within the container bounds

@@ -445,6 +445,8 @@ class ProfileMenu extends StatelessWidget {
   
 }
 */
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
@@ -595,7 +597,6 @@ class ProfileScreen extends StatelessWidget {
                         // Navigate back to login
                         if (context.mounted) {
                           Navigator.of(context).pushReplacementNamed('/login');
-                         // Navigator.pushNamed(context, AppRoutes.login);
                         }
                       },
                       child: const Text('Logout'),
@@ -607,99 +608,115 @@ class ProfileScreen extends StatelessWidget {
           },
         ),
       ),
-      
     );
-    
   }
-  
+
   void _showPersonalInfo(BuildContext context, dynamic user) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder:
-          (context) => Container(
-            height: MediaQuery.of(context).size.height * 0.7,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Personal Information',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green[800],
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            builder:
+                (_, scrollController) => Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  child: ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(24.0),
+                    children: [
+                      // Handle bar for bottom sheet
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 5,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Personal Information',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[800],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
 
-                  InfoItem(title: 'Name', value: user.nom),
-                  InfoItem(title: 'Email', value: user.email),
-                  InfoItem(
-                    title: 'Birth Date',
-                    value:
-                        user.dob != null
-                            ? '${user.dob.day}/${user.dob.month}/${user.dob.year}'
-                            : 'Not provided',
-                  ),
-                  InfoItem(title: 'Gender', value: user.sexe ?? 'Not provided'),
-                  InfoItem(
-                    title: 'Height',
-                    value:
-                        user.taille != null
-                            ? '${user.taille} cm'
-                            : 'Not provided',
-                  ),
-                  InfoItem(
-                    title: 'Weight',
-                    value:
-                        user.poids != null
-                            ? '${user.poids} kg'
-                            : 'Not provided',
-                  ),
-                  InfoItem(
-                    title: 'Activity Level',
-                    value: user.etatActivite ?? 'Not provided',
-                  ),
+                      InfoItem(title: 'Name', value: user.nom),
+                      InfoItem(title: 'Email', value: user.email),
+                      InfoItem(
+                        title: 'Birth Date',
+                        value:
+                            user.dob != null
+                                ? '${user.dob.day}/${user.dob.month}/${user.dob.year}'
+                                : 'Not provided',
+                      ),
+                      InfoItem(
+                        title: 'Gender',
+                        value: user.sexe ?? 'Not provided',
+                      ),
+                      InfoItem(
+                        title: 'Height',
+                        value:
+                            user.taille != null
+                                ? '${user.taille} cm'
+                                : 'Not provided',
+                      ),
+                      InfoItem(
+                        title: 'Weight',
+                        value:
+                            user.poids != null
+                                ? '${user.poids} kg'
+                                : 'Not provided',
+                      ),
+                      InfoItem(
+                        title: 'Activity Level',
+                        value: user.etatActivite ?? 'Not provided',
+                      ),
 
-                  const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                  Text(
-                    'Health Information',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green[800],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                      Text(
+                        'Health Information',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green[800],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
 
-                  InfoItem(
-                    title: 'Allergies',
-                    value:
-                        user.allergies.isEmpty
-                            ? 'None'
-                            : user.allergies.join(', '),
+                      InfoItem(
+                        title: 'Allergies',
+                        value:
+                            user.allergies.isEmpty
+                                ? 'None'
+                                : user.allergies.join(', '),
+                      ),
+                      InfoItem(
+                        title: 'Medical Conditions',
+                        value:
+                            user.maladies.isEmpty
+                                ? 'None'
+                                : user.maladies.join(', '),
+                      ),
+                    ],
                   ),
-                  InfoItem(
-                    title: 'Medical Conditions',
-                    value:
-                        user.maladies.isEmpty
-                            ? 'None'
-                            : user.maladies.join(', '),
-                  ),
-                ],
-              ),
-            ),
+                ),
           ),
     );
   }
@@ -730,50 +747,8 @@ class InfoItem extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildBottomNavigationBar(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.green[800],
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1, // Calories tab is selected
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
-        BottomNavigationBarItem(
-          icon: CircleAvatar(
-            backgroundColor: Colors.green[800],
-            radius: 22,
-            child: Icon(Icons.camera_alt, color: Colors.white),
-          ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center),
-          label: 'Activity',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
-      onTap: (index) {
-        if (index == 4) {
-          // Navigate to Profile screen when tapping on Profile tab
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
-          );
-        } else if (index == 1) {
-          // Navigate to Calorie screen when tapping on Calorie tab
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CalorieScreen()),
-          );
-        }
-      },
-    );
-  }
-
 }
-
+/*
 class ProfilePic extends StatelessWidget {
   const ProfilePic({super.key});
 
@@ -796,9 +771,7 @@ class ProfilePic extends StatelessWidget {
                 backgroundColor: Colors.grey[300],
                 // If you have a profile image from the user data, use it here
                 // Otherwise use a placeholder or default image
-                backgroundImage: const AssetImage(
-                  'assets/images/profile.png',
-                ),
+                backgroundImage: const AssetImage('assets/images/profile.png'),
                 // If you don't have the image asset, use an icon instead:
                 // child: Icon(Icons.person, size: 60, color: Colors.white),
               ),
@@ -839,7 +812,96 @@ class ProfilePic extends StatelessWidget {
     );
   }
 }
+*/
 
+class ProfilePic extends StatelessWidget {
+  const ProfilePic({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Access the user provider to get the current user's gender
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.currentUser;
+
+    // Determine which profile image to use based on gender
+    String profileImagePath = 'assets/images/profile.png'; // Default image
+
+    if (user != null && user.sexe != null) {
+      if (user.sexe != null && (user.sexe!.toLowerCase() == 'female' ||
+          user.sexe!.toLowerCase() == 'f') || user.sexe!.toLowerCase() == 'F') {
+        profileImagePath = 'assets/images/profile_female.png';
+      } else if (user.sexe != null &&
+          (user.sexe!.toLowerCase() == 'male' ||
+              user.sexe!.toLowerCase() == 'm')) {
+        profileImagePath = 'assets/images/profile_male.png';
+      }
+    }
+
+    return Center(
+      child: SizedBox(
+        height: 115,
+        width: 115,
+        child: Stack(
+          fit: StackFit.expand,
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.green[700]!, width: 2),
+              ),
+              child: CircleAvatar(
+                backgroundColor: Colors.grey[300],
+                // Use the gender-specific profile image
+                backgroundImage: AssetImage(profileImagePath),
+                /*
+                // Fallback to an icon if the image fails to load
+                onBackgroundImageError: (_, __) {
+                  return const Icon(
+                    Icons.person,
+                    size: 60,
+                    color: Colors.white,
+                  );
+                },
+                 */
+              ),
+            ),
+            Positioned(
+              right: -8,
+              bottom: 0,
+              child: GestureDetector(
+                onTap: () {
+                  // Add functionality to change profile picture
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Change profile picture feature coming soon',
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 46,
+                  width: 46,
+                  decoration: BoxDecoration(
+                    color: Colors.green[700],
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.grey[100]!, width: 2),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 class ProfileMenu extends StatelessWidget {
   const ProfileMenu({
     super.key,

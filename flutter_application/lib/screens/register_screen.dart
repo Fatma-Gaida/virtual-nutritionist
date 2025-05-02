@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import '../services/register_service.dart';
 import 'package:flutter_application/screens/user_details_screen.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -16,9 +17,9 @@ class _SignUpScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  
- 
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   late RegisterService _registerService;
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -27,15 +28,15 @@ class _SignUpScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    _registerService = RegisterService(ApiService(),AuthService(ApiService()));
+    _registerService = RegisterService(ApiService(), AuthService(ApiService()));
   }
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Passwords do not match')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
         return;
       }
 
@@ -52,27 +53,27 @@ class _SignUpScreenState extends State<RegisterScreen> {
         );
 
         final createdUser = await _registerService.createAccount(user);
-        
+
         if (!mounted) return;
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Welcome ${createdUser.nom}!')),
-        );
-        
-         Navigator.pushReplacement(
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Welcome ${createdUser.nom}!')));
+
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) {
               final apiService = ApiService();
               final authService = AuthService(apiService);
-              final registerService = RegisterService(apiService,authService);
+              final registerService = RegisterService(apiService, authService);
               return UserDetailsScreen(registerService: registerService);
             },
           ),
         );
       } catch (e) {
         if (!mounted) return;
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Registration failed: ${e.toString()}')),
         );
@@ -109,13 +110,9 @@ class _SignUpScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Logo or Icon
-                  Icon(
-                    Icons.local_dining,
-                    size: 80,
-                    color: Colors.green[700],
-                  ),
+                  Icon(Icons.local_dining, size: 80, color: Colors.green[700]),
                   const SizedBox(height: 16),
-                  
+
                   // Welcome Text
                   Text(
                     'Create Your Account',
@@ -130,10 +127,7 @@ class _SignUpScreenState extends State<RegisterScreen> {
                   Text(
                     'Join your personal health companion',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.green[600],
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.green[600]),
                   ),
                   const SizedBox(height: 48),
 
@@ -177,8 +171,9 @@ class _SignUpScreenState extends State<RegisterScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                          .hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
                       return null;
@@ -201,7 +196,9 @@ class _SignUpScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.lock, color: Colors.green[700]),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.green[700],
                         ),
                         onPressed: () {
@@ -238,7 +235,9 @@ class _SignUpScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.lock, color: Colors.green[700]),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                          _obscureConfirmPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.green[700],
                         ),
                         onPressed: () {
@@ -267,15 +266,18 @@ class _SignUpScreenState extends State<RegisterScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              fontSize: 18,
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
                               color: Colors.white,
+                            )
+                            : const Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
                   ),
                   const SizedBox(height: 16),
 

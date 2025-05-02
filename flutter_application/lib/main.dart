@@ -68,7 +68,7 @@
 //   }
 // }
 
-
+/*
 import 'package:flutter/material.dart';
 import 'package:flutter_application/providers/user_provider.dart';
 import 'package:flutter_application/services/auth_service.dart';
@@ -131,9 +131,73 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: AppRoutes.dashboard,
+      initialRoute: AppRoutes.login,
       onGenerateRoute: AppRouter.generateRoute,
-      // Remove the routes parameter to avoid conflicts with onGenerateRoute
+    );
+  }
+}
+*/
+
+import 'package:flutter/material.dart';
+import 'package:flutter_application/providers/user_provider.dart';
+import 'package:flutter_application/services/auth_service.dart';
+import 'package:flutter_application/services/api_service.dart';
+import 'package:flutter_application/utils/routes.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        // First, provide the ApiService
+        Provider<ApiService>(create: (_) => ApiService()),
+
+        // Then provide the AuthService which depends on ApiService
+        ProxyProvider<ApiService, AuthService>(
+          update: (_, apiService, __) => AuthService(apiService),
+        ),
+
+        // Finally provide the UserProvider which depends on AuthService
+        ChangeNotifierProxyProvider<AuthService, UserProvider>(
+          create:
+              (context) => UserProvider(
+                Provider.of<AuthService>(context, listen: false),
+              ),
+          update:
+              (_, authService, previousUserProvider) =>
+                  previousUserProvider ?? UserProvider(authService),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Health & Nutrition App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        primaryColor: Colors.green[800],
+        scaffoldBackgroundColor: Colors.grey[100],
+        fontFamily: 'Poppins',
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.green[50],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+      // Start with login screen
+      initialRoute: AppRoutes.login,
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
 }

@@ -161,10 +161,16 @@ class _WaterSettingsScreenState extends State<WaterSettingsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  /*
                   const Text(
                     'Paramètres d\'invite d\'application',
                     style: TextStyle(color: Colors.white),
-                  ),
+                  ),*/
+                  const Text(
+                      'Paramètres d\'invité d\'application: c\'est l\'heure de l\'eau',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   InkWell(
                     onTap: () {
                       _showNotificationTextDialog();

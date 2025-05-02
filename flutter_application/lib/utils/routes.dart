@@ -1,12 +1,14 @@
+// utils/routes.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
 import 'package:flutter_application/screens/dashboard_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
-import 'package:flutter_application/screens/water_tracker_screen.dart'; 
+import 'package:flutter_application/screens/water_tracker_screen.dart';
 import 'package:flutter_application/screens/recipe_screen.dart';
-import 'package:flutter_application/screens/notifications_screen.dart'; 
+import 'package:flutter_application/screens/notifications_screen.dart';
 import 'package:flutter_application/screens/recipe_details_screen.dart';
 import 'package:flutter_application/screens/login_screen.dart';
+import 'package:flutter_application/screens/register_screen.dart'; // Added signup import
 import 'package:flutter_application/screens/chatbot_screen.dart';
 import 'package:flutter_application/screens/add_plat_screen.dart';
 import 'package:flutter_application/models/recipe_model.dart';
@@ -14,11 +16,11 @@ import 'dart:js' as js;
 
 class AppRoutes {
   static const String login = '/login';
+  static const String signup = '/register';
   static const String dashboard = '/dashboard';
   static const String calories = '/calories';
   static const String profile = '/profile';
   static const String water = '/water';
-  static const String signup = '/signup';
   static const String notification = '/notification';
   static const String recipes = '/recipes';
   static const String recipeDetails = '/recipe-details';
@@ -28,68 +30,77 @@ class AppRoutes {
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    // You can pass chatbotId through route settings if needed
-    final String chatbotId = '1';  // Replace with your actual chatbot ID or get from settings
-    
+    final String chatbotId =
+        '1'; // Replace with your actual chatbot ID or get from settings
+
     switch (settings.name) {
+      // Authentication routes without bottom navigation
       case AppRoutes.login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
-      
+
+      case AppRoutes.signup:
+        return MaterialPageRoute(builder: (_) => const RegisterScreen());
+
+      // Main app routes with bottom navigation
       case AppRoutes.dashboard:
         return MaterialPageRoute(
-          builder: (_) => RootNavigationPage(initialIndex: 0, chatbotId: chatbotId),
+          builder: (_) => const RootNavigationPage(initialIndex: 0),
         );
-      
+
       case AppRoutes.calories:
         return MaterialPageRoute(
-          builder: (_) => RootNavigationPage(initialIndex: 1, chatbotId: chatbotId),
+          builder: (_) => const RootNavigationPage(initialIndex: 1),
         );
-      
+
       case AppRoutes.water:
         return MaterialPageRoute(
-          builder: (_) => RootNavigationPage(initialIndex: 2, chatbotId: chatbotId),
+          builder: (_) => const RootNavigationPage(initialIndex: 2),
         );
-      
+
       case AppRoutes.profile:
         return MaterialPageRoute(
-          builder: (_) => RootNavigationPage(initialIndex: 3, chatbotId: chatbotId),
+          builder: (_) => const RootNavigationPage(initialIndex: 3),
         );
-      
+
+      // Standalone screens (no bottom navigation)
       case AppRoutes.notification:
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
-        case AppRoutes.addPlat:
+
+      case AppRoutes.addPlat:
         return MaterialPageRoute(builder: (_) => const AddPlatScreen());
-      
+
       case AppRoutes.recipes:
         return MaterialPageRoute(builder: (_) => const RecipesScreen());
-      
+
       case AppRoutes.chatbot:
-        return MaterialPageRoute(builder: (_) => const ChatbotScreen(chatbotId: '1'));
-      
+        return MaterialPageRoute(
+          builder: (_) => ChatbotScreen(chatbotId: chatbotId),
+        );
+
       case AppRoutes.recipeDetails:
         final recipe = settings.arguments as Recipe;
         return MaterialPageRoute(
           builder: (_) => RecipeDetailsScreen(recipe: recipe),
         );
-      
-      // Add other routes as needed
+
       default:
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            body: Center(
-              child: Text('No route defined for ${settings.name}'),
-            ),
-          ),
+          builder:
+              (_) => Scaffold(
+                body: Center(
+                  child: Text('No route defined for ${settings.name}'),
+                ),
+              ),
         );
     }
   }
 }
 
 class RootNavigationPage extends StatefulWidget {
-  const RootNavigationPage({Key? key, required this.initialIndex, this.chatbotId = "1"}) : super(key: key);
+  const RootNavigationPage({Key? key, required this.initialIndex})
+    : super(key: key);
 
   final int initialIndex;
-  final String chatbotId;
 
   @override
   _RootNavigationPageState createState() => _RootNavigationPageState();
@@ -116,7 +127,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
             const script = document.createElement('script');
             script.src = 'https://www.chatbase.co/embed.min.js';
             script.id = 'a_t4Hm6RM6VVtTkPm9DFX';
-            script.setAttribute('data-chatbot-id', '${widget.chatbotId}');
+            script.setAttribute('data-chatbot-id', '1');
             script.setAttribute('data-domain', 'www.chatbase.co');
             script.onerror = function() {
               console.error('Chatbase failed to load');
@@ -134,7 +145,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
             window.addEventListener('load', loadChatbase);
           }
         })();
-        '''
+        ''',
       ]);
 
       // Optional: Listen for JS errors (if using Flutter Web renderer)
@@ -146,16 +157,15 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
               _isLoading = false;
             });
           }
-        }
+        },
       };
-      /*
+
       // Simulate loading delay (remove if unnecessary)
-      Future.delayed(const Duration(seconds: ), () {
+      Future.delayed(const Duration(seconds: 2), () {
         if (!_hasError) {
           setState(() => _isLoading = false);
         }
       });
-      */
     } catch (e) {
       setState(() {
         _hasError = true;
@@ -164,16 +174,14 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
     }
   }
 
-  // List of screens to display
+  // List of main screens with bottom navigation
   final List<Widget> _screens = [
-    const LoginScreen(),
     const DashboardScreen(),
     const CalorieScreen(),
     const WaterTrackerScreen(),
     const ProfileScreen(),
   ];
 
-  // Add the missing _onItemTapped method
   void _onItemTapped(int index) {
     // Update the state and navigate using named routes to update the URL
     setState(() {
@@ -184,18 +192,15 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
     String route;
     switch (index) {
       case 0:
-        route = AppRoutes.login;
-        break;
-      case 1:
         route = AppRoutes.dashboard;
         break;
-      case 2:
+      case 1:
         route = AppRoutes.calories;
         break;
-      case 3:
+      case 2:
         route = AppRoutes.water;
         break;
-      case 4:
+      case 3:
         route = AppRoutes.profile;
         break;
       default:
@@ -213,7 +218,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
         children: [
           // Main content (screens)
           _screens[_selectedIndex],
-          
+
           // Chatbot overlay
           Positioned.fill(
             child: Stack(
@@ -259,14 +264,15 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
       unselectedItemColor: Colors.grey,
       currentIndex: _selectedIndex,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
         BottomNavigationBarItem(
-          icon: Icon(Icons.water_drop),
-          label: 'Water',
+          icon: Icon(Icons.dashboard),
+          label: 'Dashboard',
         ),
+        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
+        BottomNavigationBarItem(icon: Icon(Icons.water_drop), label: 'Water'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-         BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+
       ],
       onTap: _onItemTapped,
     );

@@ -90,6 +90,9 @@ flutter:
     - assets/images/lunch.png
     - assets/images/dinner.png
     - assets/chatbot.html
+    - assets/images/profile_female.png
+    - assets/images/profile_male.png
+    - assets/images/profile.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
-import 'dart:js' as js;
 import 'package:flutter_application/screens/calorie_screen.dart';
 import 'package:flutter_application/screens/dashboard_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
 import 'package:flutter_application/screens/water_tracker_screen.dart'; 
 import 'package:flutter_application/screens/recipe_screen.dart';
-import 'package:flutter_application/screens/water_tracker_screen.dart'; 
 import 'package:flutter_application/screens/notifications_screen.dart'; 
-import 'package:flutter_application/screens/recipe_details_screen.dart'; 
- 
-import 'package:flutter_application/models/recipe_model.dart'; 
-
+import 'package:flutter_application/screens/recipe_details_screen.dart';
+import 'package:flutter_application/screens/login_screen.dart';
+import 'package:flutter_application/screens/chatbot_screen.dart';
+import 'package:flutter_application/screens/add_plat_screen.dart';
+import 'package:flutter_application/models/recipe_model.dart';
+import 'dart:js' as js;
 
 class AppRoutes {
   static const String login = '/login';
-  static const String dashboard= '/dashboard';
+  static const String dashboard = '/dashboard';
   static const String calories = '/calories';
   static const String profile = '/profile';
   static const String water = '/water';
   static const String signup = '/signup';
-   static const String notification = '/notification';
+  static const String notification = '/notification';
   static const String recipes = '/recipes';
   static const String recipeDetails = '/recipe-details';
-   static const String recipe= '/recipe';
+  static const String chatbot = '/chatbot';
+  static const String addPlat = '/addPlat';
 }
 
 class AppRouter {
@@ -31,32 +32,45 @@ class AppRouter {
     final String chatbotId = '1';  // Replace with your actual chatbot ID or get from settings
     
     switch (settings.name) {
+      case AppRoutes.login:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      
       case AppRoutes.dashboard:
         return MaterialPageRoute(
           builder: (_) => RootNavigationPage(initialIndex: 0, chatbotId: chatbotId),
         );
+      
       case AppRoutes.calories:
         return MaterialPageRoute(
           builder: (_) => RootNavigationPage(initialIndex: 1, chatbotId: chatbotId),
         );
+      
       case AppRoutes.water:
         return MaterialPageRoute(
           builder: (_) => RootNavigationPage(initialIndex: 2, chatbotId: chatbotId),
         );
+      
       case AppRoutes.profile:
         return MaterialPageRoute(
           builder: (_) => RootNavigationPage(initialIndex: 3, chatbotId: chatbotId),
         );
-        case AppRoutes.recipe:
+      
+      case AppRoutes.notification:
+        return MaterialPageRoute(builder: (_) => const NotificationScreen());
+        case AppRoutes.addPlat:
+        return MaterialPageRoute(builder: (_) => const AddPlatScreen());
+      
+      case AppRoutes.recipes:
+        return MaterialPageRoute(builder: (_) => const RecipesScreen());
+      
+      case AppRoutes.chatbot:
+        return MaterialPageRoute(builder: (_) => const ChatbotScreen(chatbotId: '1'));
+      
+      case AppRoutes.recipeDetails:
+        final recipe = settings.arguments as Recipe;
         return MaterialPageRoute(
-          builder: (_) => RootNavigationPage(initialIndex: 3, chatbotId: chatbotId),
+          builder: (_) => RecipeDetailsScreen(recipe: recipe),
         );
-        case AppRoutes.recipeDetails:
-            final recipe = settings.arguments as Recipe;
-            return MaterialPageRoute(
-              builder: (_) => RecipeDetailsScreen(recipe: recipe),
-            );
-        
       
       // Add other routes as needed
       default:
@@ -151,7 +165,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
 
   // List of screens to display
   final List<Widget> _screens = [
-    const DashboardScreen(), // Make sure to have this or uncomment import
+    const DashboardScreen(),
     const CalorieScreen(),
     const WaterTrackerScreen(),
     const ProfileScreen(),
@@ -247,7 +261,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
           label: 'Water',
         ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
+         BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
       ],
       onTap: _onItemTapped,
     );

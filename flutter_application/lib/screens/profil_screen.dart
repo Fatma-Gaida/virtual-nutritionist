@@ -594,8 +594,8 @@ class ProfileScreen extends StatelessWidget {
                         await userProvider.logout();
                         // Navigate back to login
                         if (context.mounted) {
-                          //Navigator.of(context).pushReplacementNamed('/login');
-                          Navigator.pushNamed(context, AppRoutes.login);
+                          Navigator.of(context).pushReplacementNamed('/login');
+                         // Navigator.pushNamed(context, AppRoutes.login);
                         }
                       },
                       child: const Text('Logout'),

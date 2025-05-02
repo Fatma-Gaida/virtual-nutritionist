@@ -70,34 +70,12 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application/models/recipe_model.dart';
-import 'package:flutter_application/screens/notifications_screen.dart';
-import 'package:flutter_application/screens/recipe_details_screen.dart';
-import 'package:flutter_application/screens/recipe_screen.dart';
-import 'package:flutter_application/screens/water_tracker_screen.dart';
-import 'package:flutter_application/screens/calorie_screen.dart';
-import 'package:flutter_application/screens/dashboard_screen.dart';
-import 'package:flutter_application/screens/login_screen.dart';
-import 'package:flutter_application/screens/chatbot_screen.dart';
 import 'package:flutter_application/providers/user_provider.dart';
-
-import 'package:flutter_application/screens/dashboard_screen.dart';
 import 'package:flutter_application/services/auth_service.dart';
 import 'package:flutter_application/services/api_service.dart';
 import 'package:flutter_application/utils/routes.dart';
 import 'package:provider/provider.dart';
 
-class AppRoutes {
-  static const String login = '/login';
-  static const String calories = '/calories';
-  static const String profile = '/profile';
-  static const String water = '/water';
-  static const String recipes = '/recipes';
-  static const String recipeDetails = '/recipe-details';
-  static const String chatbot = '/chatbot'; 
-  static const String dashboard ='/dashboard'; 
-  static const String notification ='/notification'; 
-}
 
 void main() {
   runApp(
@@ -130,9 +108,9 @@ void main() {
   );
 }
 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
@@ -155,13 +133,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: AppRoutes.dashboard,
       onGenerateRoute: AppRouter.generateRoute,
-      routes: {
-        AppRoutes.login: (context) => const LoginScreen(),
-        AppRoutes.chatbot: (context) => const ChatbotScreen(chatbotId: '1'),
-        AppRoutes.notification: (context) => const NotificationScreen(),
-        AppRoutes.recipes: (context) => const RecipesScreen(),
-        AppRoutes.calories: (context) => const CalorieScreen(),
-      },
+      // Remove the routes parameter to avoid conflicts with onGenerateRoute
     );
   }
 }

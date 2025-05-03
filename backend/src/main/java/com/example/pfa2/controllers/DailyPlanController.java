@@ -53,6 +53,7 @@ package com.example.pfa2.controllers;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,31 +92,79 @@ public class DailyPlanController {
      * If date parameter is provided, get the plan for that date
      * Otherwise, get today's plan
      */
+    /* 
     @GetMapping("/users/{userId}/daily-plan")
     public ResponseEntity<?> getDailyPlan(
             @PathVariable String userId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-
+    
         // Verify user exists
         Optional<User> userOpt = userRepository.findById(userId);
         
-
+    
         User user = userOpt.get();
-
+    
         // If date is not provided, use today's date
         if (date == null) {
             date = LocalDate.now();
         }
-
+    
         // Get daily plan for the user and date
         DailyPlan dailyPlan = dailyPlanService.getDailyPlanForUser(userId, date);
-
+    
         // Convert to response format
         Map<String, Object> response = formatDailyPlanResponse(dailyPlan, user);
-
+    
         return ResponseEntity.ok(response);
     }
+    */
+    @GetMapping("/users/{userId}/daily-plan")
+public ResponseEntity<?> getDailyPlan(
+        @PathVariable String userId,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
+    System.out.println("Looking up user with ID: " + userId);
+    
+    // Try to find the user
+    Optional<User> userOpt = userRepository.findById(userId);
+    
+    // Debug output
+    System.out.println("User found: " + userOpt.isPresent());
+    
+    // Return 404 if user not found
+    if (!userOpt.isPresent()) {
+        // Try to find any users in the database to confirm the repository works
+        List<User> allUsers = userRepository.findAll();
+        System.out.println("Total users in database: " + allUsers.size());
+        if (!allUsers.isEmpty()) {
+            System.out.println("First user ID: " + allUsers.get(0).getId());
+        }
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with ID: " + userId);
+    }
+
+    User user = userOpt.get();
+    System.out.println("Retrieved user: " + user.getNom());
+
+    // If date is not provided, use today's date
+    if (date == null) {
+        date = LocalDate.now();
+    }
+
+    // Get daily plan for the user and date
+    try {
+        DailyPlan dailyPlan = dailyPlanService.getDailyPlanForUser(userId, date);
+        
+        // Convert to response format
+        Map<String, Object> response = formatDailyPlanResponse(dailyPlan, user);
+        
+        return ResponseEntity.ok(response);
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error retrieving daily plan: " + e.getMessage());
+    }
+    }
     /**
      * Add a meal to the user's daily plan
      */
@@ -205,6 +254,7 @@ public class DailyPlanController {
         }
     }
 
+
     /**
      * Format the daily plan response to match what the frontend expects
      */
@@ -212,7 +262,7 @@ public class DailyPlanController {
         Map<String, Object> response = new HashMap<>();
 
         // Basic user info
-        response.put("username", user.getNom());
+        response.put("nom", user.getNom());
         response.put("date", formatDate(dailyPlan.getDate()));
 
         // Calorie information
@@ -232,6 +282,21 @@ public class DailyPlanController {
         return response;
     }
 
+    /**
+     * Format a meal for the frontend
+     */
+    private Map<String, Object> formatMeal(String mealType, DailyPlan.MealEntry mealEntry) {
+        Map<String, Object> mealMap = new HashMap<>();
+
+        mealMap.put("id", mealEntry.getRecipeId());
+        mealMap.put("type", mealType);
+        mealMap.put("name", mealEntry.getName());
+        mealMap.put("calories", mealEntry.getCalories());
+        mealMap.put("imageUrl", ""); // Add default or fetch from Recipe if needed
+        mealMap.put("timestamp", LocalDate.now().toString()); // Current date as timestamp
+
+        return mealMap;
+    }
     /**
      * Format a meal for the frontend
      */

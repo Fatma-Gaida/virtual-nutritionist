@@ -38,8 +38,7 @@ public interface DailyPlanRepository extends MongoRepository<DailyPlan, String> 
     /**
      * Find all daily plans for a user
      */
-    //Iterable<DailyPlan> findByUserId(String userId);
-    Optional<DailyPlan> findByUserId(String userId);
+    Iterable<DailyPlan> findByUserId(String userId);
 
     /**
      * Find all daily plans for a user between two dates

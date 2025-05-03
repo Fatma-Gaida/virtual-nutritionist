@@ -60,6 +60,7 @@ public class DailyPlanService {
     /**
      * Add a meal to the user's daily plan
      */
+    /* 
     public DailyPlan addMealToPlan(String userId, String mealType, String recipeId) {
         // Get today's plan
         DailyPlan dailyPlan = getTodayPlanForUser(userId);
@@ -78,6 +79,38 @@ public class DailyPlanService {
         // Recalculate total calories
         dailyPlan.calculateTotalCalories();
         
+        // Save and return updated plan
+        return dailyPlanRepository.save(dailyPlan);
+    }
+    */
+
+    /**
+     * Add a meal to the user's daily plan
+     */
+    public DailyPlan addMealToPlan(String userId, String mealType, String recipeId) {
+        // Get today's plan
+        DailyPlan dailyPlan = getTodayPlanForUser(userId);
+
+        // Find the recipe
+        Optional<Recipe> recipeOpt = recipeRepository.findById(recipeId);
+        if (!recipeOpt.isPresent()) {
+            throw new IllegalArgumentException("Recipe not found with ID: " + recipeId);
+        }
+
+        Recipe recipe = recipeOpt.get();
+
+        // Create a meal entry
+        DailyPlan.MealEntry mealEntry = new DailyPlan.MealEntry();
+        mealEntry.setRecipeId(recipe.getId());
+        mealEntry.setName(recipe.getName());
+        mealEntry.setCalories(recipe.getCalories());
+
+        // Add the meal to the plan
+        dailyPlan.getMeals().put(mealType, mealEntry);
+
+        // Recalculate total calories
+        dailyPlan.calculateTotalCalories();
+
         // Save and return updated plan
         return dailyPlanRepository.save(dailyPlan);
     }

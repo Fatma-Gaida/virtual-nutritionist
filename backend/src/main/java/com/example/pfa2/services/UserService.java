@@ -8,6 +8,9 @@ import com.example.pfa2.repository.RecipeRepository;
 import com.example.pfa2.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -59,10 +62,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /* 
     public Optional<User> getUserById(String idU) {
         return userRepository.findById(idU);
     }
+    */
+    public Optional<User> getUserById(String userId) {
+        System.out.println("Looking up user with ID: " + userId);
 
+        // Print all user IDs in the database for debugging
+        List<User> allUsers = userRepository.findAll();
+        System.out.println("All user IDs in the database:");
+        for (User u : allUsers) {
+            System.out.println("- " + u.getId());
+        }
+
+        Optional<User> user = userRepository.findById(userId);
+        System.out.println("User found: " + (user.isPresent() ? "YES" : "NO"));
+
+        return user;
+    }
 
     // Mettre à jour l'objectif de calories
     public User updateCalorieGoal(String userId, int caloriesObjectif) {
@@ -84,17 +103,18 @@ public class UserService {
         }
 
         // Try to find any plan for this user (might be from a previous day)
-        Optional<DailyPlan> oldPlan = dailyPlanRepository.findByUserId(userId);
+        Iterable<DailyPlan> oldPlan = dailyPlanRepository.findByUserId(userId);
 
-        if (oldPlan.isPresent()) {
-            DailyPlan plan = oldPlan.get();
+        //if (oldPlan.isPresent()) {
+        //DailyPlan plan = oldPlan.get();
+            DailyPlan plan = oldPlan.iterator().hasNext() ? oldPlan.iterator().next() : null;
             // If it's an old plan, reset it for today
             if (!plan.getDate().equals(LocalDate.now())) {
                 plan.resetForNewDay();
                 return dailyPlanRepository.save(plan);
             }
-            return plan;
-        }
+            //return plan;
+        //}
 
         // If no plan exists at all, create a new one
         DailyPlan newPlan = new DailyPlan(userId);
@@ -195,5 +215,20 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    public User findUserByIdDirectly(String userId) {
+        try {
+            Query query = new Query(Criteria.where("_id").is(userId));
+            return mongoTemplate.findOne(query, User.class);
+        } catch (Exception e) {
+            System.out.println("Error in direct MongoDB query: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 }

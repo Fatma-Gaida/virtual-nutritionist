@@ -41,11 +41,11 @@ public class User {
     }
 
     // Getters and Setters
-    public String getIdU() {
+    public String getId() {
         return id;
     }
 
-    public void setIdU(String idu) {
+    public void setId(String idu) {
         this.id = idu;
     }
 

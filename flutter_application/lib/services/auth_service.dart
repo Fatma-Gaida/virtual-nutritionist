@@ -4,6 +4,9 @@ import '../services/api_service.dart';
 
 class AuthService {
   final ApiService _apiService;
+  
+  // Add this static string to cache the user ID
+  static String? _cachedUserId;
 
   AuthService(this._apiService);
 
@@ -80,6 +83,9 @@ class AuthService {
   // Save all user data to SharedPreferences
   Future<void> saveUserCredentials(User user) async {
     final prefs = await SharedPreferences.getInstance();
+
+  // Set the static cache when credentials are saved
+    AuthService._cachedUserId = user.id;
 
     // Save user ID
     //String userId = user.idU.timestamp.toString();
@@ -205,6 +211,7 @@ class AuthService {
   }
 
   Future<void> logout() async {
+    AuthService._cachedUserId = null;
     final prefs = await SharedPreferences.getInstance();
     // Clear all user-related data
     await prefs.clear();
@@ -214,5 +221,17 @@ class AuthService {
   Future<String?> getCurrentUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('user_id');
+  }
+
+
+   // Add this static method to initialize the cached user ID
+  static Future<void> initCachedUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    _cachedUserId = prefs.getString('user_id');
+  }
+
+  // Add this static synchronous method for the router
+  static String getCurrentUserIdReturningString() {
+    return _cachedUserId ?? '';
   }
 }

@@ -1,9 +1,10 @@
 
 
+/*
 import 'package:flutter_application/models/meal_model.dart';
 
 class CalorieData {
-  final String username;
+  final String nom;
   final String date;
   final int totalCalories;
   final int calorieGoal;
@@ -11,7 +12,7 @@ class CalorieData {
   final List<Meal> meals;
 
   CalorieData({
-    required this.username,
+    required this.nom,
     required this.date,
     required this.totalCalories,
     required this.calorieGoal,
@@ -43,7 +44,7 @@ class CalorieData {
     }
 
     return CalorieData(
-      username: map['username'] ?? '',
+      nom: map['nom'] ?? '',
       date: map['date'] ?? '',
       totalCalories: map['totalCalories'] ?? 0,
       calorieGoal: map['calorieGoal'] ?? 0,
@@ -54,12 +55,135 @@ class CalorieData {
 
   Map<String, dynamic> toMap() {
     return {
-      'username': username,
+      'nom': nom,
       'date': date,
       'totalCalories': totalCalories,
       'calorieGoal': calorieGoal,
       'caloriePercentage': caloriePercentage,
       'meals': meals.map((meal) => meal.toMap()).toList(),
+    };
+  }
+}
+*/
+
+
+//changed in 21:18
+/*
+// lib/models/calorie_model.dart
+import 'package:flutter_application/models/meal_model.dart';
+
+class CalorieData {
+  final String nom;
+  final String date;
+  final int totalCalories;
+  final int calorieGoal;
+  final double caloriePercentage;
+  final List<Meal> meals;
+
+  CalorieData({
+    required this.nom,
+    required this.date,
+    required this.totalCalories,
+    required this.calorieGoal,
+    required this.caloriePercentage,
+    required this.meals,
+  });
+
+  factory CalorieData.fromJson(Map<String, dynamic> json) {
+    // Parse the meals list from JSON
+    List<Meal> mealsList = [];
+    if (json['meals'] != null) {
+      mealsList = List<Meal>.from(
+        (json['meals'] as List).map((mealJson) => Meal.fromJson(mealJson)),
+      );
+    }
+
+    return CalorieData(
+      nom: json['nom'] ?? 'User',
+      date: json['date'] ?? DateTime.now().toString().split(' ')[0],
+      totalCalories: json['totalCalories'] ?? 0,
+      calorieGoal: json['calorieGoal'] ?? 2000,
+      caloriePercentage: json['caloriePercentage']?.toDouble() ?? 0.0,
+      meals: mealsList,
+    );
+  }
+
+  // Empty data constructor for loading state
+  factory CalorieData.empty() {
+    return CalorieData(
+      nom: 'Loading...',
+      date: DateTime.now().toString().split(' ')[0],
+      totalCalories: 0,
+      calorieGoal: 2000,
+      caloriePercentage: 0.0,
+      meals: [],
+    );
+  }
+}
+*/
+// lib/models/calorie_model.dart
+import 'package:intl/intl.dart';
+import 'meal_model.dart';
+
+class CalorieData {
+  final String nom;
+  final String date;
+  final int totalCalories;
+  final int calorieGoal;
+  final double caloriePercentage;
+  final List<MealItem> meals;
+
+  CalorieData({
+    required this.nom,
+    required this.date,
+    required this.totalCalories,
+    required this.calorieGoal,
+    required this.caloriePercentage,
+    required this.meals,
+  });
+
+  // Create an empty instance for error cases
+  factory CalorieData.empty() {
+    return CalorieData(
+      nom: "Guest",
+      date: DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      totalCalories: 0,
+      calorieGoal: 2000,
+      caloriePercentage: 0.0,
+      meals: [],
+    );
+  }
+
+  // Create from API response
+  factory CalorieData.fromJson(Map<String, dynamic> json) {
+    List<MealItem> mealsList = [];
+
+    if (json['meals'] != null) {
+      mealsList =
+          (json['meals'] as List)
+              .map((mealJson) => MealItem.fromJson(mealJson))
+              .toList();
+    }
+
+    return CalorieData(
+      nom: json['nom'] ?? 'User',
+      date: json['date'] ?? DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      totalCalories: json['totalCalories'] ?? 0,
+      calorieGoal: json['calorieGoal'] ?? 2000,
+      caloriePercentage: json['caloriePercentage'] ?? 0.0,
+      meals: mealsList,
+    );
+  }
+
+  // Convert to Map for API requests
+  Map<String, dynamic> toJson() {
+    return {
+      'nom': nom,
+      'date': date,
+      'totalCalories': totalCalories,
+      'calorieGoal': calorieGoal,
+      'caloriePercentage': caloriePercentage,
+      'meals': meals.map((meal) => meal.toJson()).toList(),
     };
   }
 }

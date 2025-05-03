@@ -562,20 +562,13 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   ProfileMenu(
-                    text: "Settings",
+                    text: "Historique",
                     icon: Icons.settings,
                     press: () {
                       // Navigate to settings page
                     },
                   ),
-                  const SizedBox(height: 12),
-                  ProfileMenu(
-                    text: "Help Center",
-                    icon: Icons.help,
-                    press: () {
-                      // Navigate to help center
-                    },
-                  ),
+                  
                   const SizedBox(height: 24),
 
                   // Logout button

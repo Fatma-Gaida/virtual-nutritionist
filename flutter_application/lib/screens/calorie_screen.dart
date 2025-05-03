@@ -1,703 +1,195 @@
-/*import 'package:flutter/material.dart';
-import 'package:flutter_application/models/meal_model.dart';
-import 'package:flutter_application/screens/profil_screen.dart';
-import 'package:flutter_application/screens/recipe_screen.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../models/calorie_model.dart';
-import '../repositories/Calories_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CalorieScreen extends StatefulWidget {
-  const CalorieScreen({super.key});
+  final String userId;
+
+  const CalorieScreen({Key? key, required this.userId}) : super(key: key);
 
   @override
   _CalorieScreenState createState() => _CalorieScreenState();
 }
 
 class _CalorieScreenState extends State<CalorieScreen> {
-  final CalorieRepository _repository = CalorieRepository();
-  late Future<CalorieData> _calorieDataFuture;
+  bool isLoading = true;
+  String userName = "";
+  int calorieGoal = 0;
+  int totalCalories = 0;
+  double caloriePercentage = 0.0;
+  List<MealItem> meals = [];
+  final String baseUrl =
+      "http://localhost:8080/api"; // Replace with your actual API URL
 
   @override
   void initState() {
     super.initState();
-    _calorieDataFuture = _repository.getTodayCalorieData();
-  }
-
-  // Refresh data after adding a new meal
-  void _refreshData() {
-    setState(() {
-      _calorieDataFuture = _repository.getTodayCalorieData();
-    });
+    // Don't fetch data here - it will be done in didChangeDependencies
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: SafeArea(
-        child: FutureBuilder<CalorieData>(
-          future: _calorieDataFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('No data available'));
-            }
-
-            final calorieData = snapshot.data!;
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(calorieData),
-                  _buildCalorieCard(calorieData),
-                  _buildMealsList(calorieData),
-                  SizedBox(height: 80), // Space for bottom navigation
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
-    );
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (isLoading) {
+      // Delay the fetch until after mount
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        fetchDailyPlan();
+      });
+    }
   }
 
-  Widget _buildHeader(CalorieData data) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profie.png'),
-                radius: 24,
-              ),
-              SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data.username,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    data.date,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          IconButton(
-            icon: Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
+  Future<void> fetchDailyPlan() async {
+    // Check if the widget is mounted before starting the loading state
+    if (!mounted) return;
 
-  Widget _buildCalorieCard(CalorieData data) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFF2E6930),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  'My Calories',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Icon(Icons.emoji_food_beverage, color: Colors.amber),
-              ],
-            ),
-            SizedBox(height: 20),
-            CircularPercentIndicator(
-              radius: 80.0,
-              lineWidth: 15.0,
-              percent:
-                  data.caloriePercentage > 1.0 ? 1.0 : data.caloriePercentage,
-              center: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${data.totalCalories}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 26.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    'KCAL',
-                    style: TextStyle(color: Colors.green[300], fontSize: 14.0),
-                  ),
-                ],
-              ),
-              progressColor: Colors.amber,
-              backgroundColor: Colors.green.withOpacity(0.3),
-              circularStrokeCap: CircularStrokeCap.round,
-            ),
-            SizedBox(height: 20),
-            Row(
-              // Keeping this row for future implementation
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    // Validate userId before making the API call
+    if (widget.userId.isEmpty) {
+      setState(() {
+        isLoading = false;
+      });
 
-  Widget _buildMealsList(CalorieData data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Meals today',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Navigate to the recipes screen when "All" is clicked
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RecipesScreen()),
-                  ).then((_) {
-                    // Refresh data when returning from recipes screen
-                    _refreshData();
-                  });
-                },
-                child: Text('All'),
-                style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
-              ),
-            ],
-          ),
-        ),
-        ...data.meals.map((meal) => _buildMealItem(meal)).toList(),
-      ],
-    );
-  }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: User ID is missing')),
+      );
+      return;
+    }
 
-  Widget _buildMealItem(Meal meal) {
-    return Dismissible(
-      key: Key(meal.id),
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
-        child: Icon(Icons.delete, color: Colors.white),
-      ),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        // Remove meal when swiped
-        _repository.removeMeal(meal.id).then((_) => _refreshData());
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: ListTile(
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[200],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                meal.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.fastfood, size: 24, color: Colors.amber);
-                },
-              ),
-            ),
-          ),
-          title: Text(meal.name, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Row(
-            children: [
-              Text(meal.type, style: TextStyle(color: Colors.grey[600])),
-              SizedBox(width: 10),
-              Text(
-                '${meal.calories} Kcal',
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          trailing: Icon(Icons.chevron_right),
-          onTap: () {
-            // Navigate to meal details if needed
-          },
-        ),
-      ),
-    );
-  }
+    setState(() {
+      isLoading = true;
+    });
 
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.green[800],
-      unselectedItemColor: Colors.grey,
-      currentIndex: 1, // Calories tab is selected
-      items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: 'Calories'),
-        BottomNavigationBarItem(
-          icon: CircleAvatar(
-            backgroundColor: Colors.green[800],
-            radius: 22,
-            child: Icon(Icons.camera_alt, color: Colors.white),
-          ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.fitness_center),
-          label: 'Activity',
-        ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-      ],
-      onTap: (index) {
-        if (index == 1) {
-          // Refresh data when tapping on Calories tab
-          _refreshData();
-        } else if (index == 4) {
-          // Navigate to Profile screen when tapping on Profile tab
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
-          );
+    try {
+      print('Fetching data for user ID: ${widget.userId}');
+
+      final response = await http.get(
+        Uri.parse('$baseUrl/users/${widget.userId}/daily-plan'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // Check mounted before updating state
+        if (mounted) {
+          setState(() {
+            userName = data['nom'] ?? "User";
+            calorieGoal = data['calorieGoal'] ?? 2000;
+            totalCalories = data['totalCalories'] ?? 0;
+            caloriePercentage = data['caloriePercentage'] ?? 0.0;
+            meals =
+                (data['meals'] as List? ?? [])
+                    .map((meal) => MealItem.fromJson(meal))
+                    .toList();
+            isLoading = false;
+          });
         }
-      },
-    );
-  }
-}
-*/
+      } else {
+        throw Exception('Failed to load daily plan: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      // Check mounted before showing error state
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-import 'package:flutter/material.dart';
-import 'package:flutter_application/models/meal_model.dart';
-import 'package:flutter_application/screens/recipe_screen.dart';
-import 'package:flutter_application/utils/routes.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../models/calorie_model.dart';
-import '../repositories/Calories_repository.dart';
-
-class CalorieScreen extends StatefulWidget {
-  const CalorieScreen({super.key});
-
-  @override
-  _CalorieScreenState createState() => _CalorieScreenState();
-}
-
-class _CalorieScreenState extends State<CalorieScreen> {
-  final CalorieRepository _repository = CalorieRepository();
-  late Future<CalorieData> _calorieDataFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _calorieDataFuture = _repository.getTodayCalorieData();
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load data: $e')));
+      }
+    }
   }
 
-  // Refresh data after adding a new meal
-  void _refreshData() {
-    setState(() {
-      _calorieDataFuture = _repository.getTodayCalorieData();
-    });
+  Future<void> addToConsumedPlates(MealItem meal) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/users/${widget.userId}/consumed-plates'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'recipeId': meal.id, 'meal': meal.type}),
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${meal.name} added to consumed meals')),
+        );
+
+        // Check mounted before refreshing data
+        if (mounted) {
+          await fetchDailyPlan();
+        }
+      } else {
+        throw Exception(
+          'Failed to add meal to consumed plates: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to add meal: $e')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: SafeArea(
-        child: FutureBuilder<CalorieData>(
-          future: _calorieDataFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('No data available'));
-            }
-
-            final calorieData = snapshot.data!;
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(calorieData),
-                  _buildCalorieCard(calorieData),
-                  _buildMealsList(calorieData),
-                  SizedBox(height: 80), // Space for bottom navigation
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-      // Bottom navigation is now handled by MainNavigationScreen
-    );
-  }
-
-  // Rest of your methods remain the same, but remove the _buildBottomNavigationBar method
-
- 
-
-    Widget _buildCalorieCard(CalorieData data) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFF2E6930),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  'My Calories',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Icon(Icons.emoji_food_beverage, color: Colors.amber),
-              ],
-            ),
-            SizedBox(height: 20),
-            CircularPercentIndicator(
-              radius: 80.0,
-              lineWidth: 15.0,
-              percent:
-                  data.caloriePercentage > 1.0 ? 1.0 : data.caloriePercentage,
-              center: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${data.totalCalories}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 26.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Text(
-                    'KCAL',
-                    style: TextStyle(color: Colors.green[300], fontSize: 14.0),
-                  ),
-                ],
-              ),
-              progressColor: Colors.amber,
-              backgroundColor: Colors.green.withOpacity(0.3),
-              circularStrokeCap: CircularStrokeCap.round,
-            ),
-            SizedBox(height: 20),
-            Row(
-              // Keeping this row for future implementation
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMealsList(CalorieData data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Meals today',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Navigate to the recipes screen when "All" is clicked
-                  Navigator.pushNamed(context, AppRoutes.recipes).then((_) {
-                    // Refresh data when returning from recipes screen
-                    _refreshData();
-                  });
-                },
-                child: Text('All'),
-                style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
-              ),
-            ],
-          ),
-        ),
-        ...data.meals.map((meal) => _buildMealItem(meal)).toList(),
-      ],
-    );
-  }
-
-    Widget _buildMealItem(Meal meal) {
-    return Dismissible(
-      key: Key(meal.id),
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
-        child: Icon(Icons.delete, color: Colors.white),
-      ),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        // Remove meal when swiped
-        _repository.removeMeal(meal.id).then((_) => _refreshData());
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: ListTile(
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[200],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                meal.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.fastfood, size: 24, color: Colors.amber);
-                },
-              ),
-            ),
-          ),
-          title: Text(meal.name, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Row(
-            children: [
-              Text(meal.type, style: TextStyle(color: Colors.grey[600])),
-              SizedBox(width: 10),
-              Text(
-                '${meal.calories} Kcal',
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          trailing: Icon(Icons.chevron_right),
-          onTap: () {
-            // Navigate to meal details if needed
-          },
-        ),
-      ),
-    );
-  }
-  
-  Widget _buildHeader(CalorieData data) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profie.png'),
-                radius: 24,
-              ),
-              SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data.username,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    data.date,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          IconButton(
-            icon: Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
-}
-*/
-
-
-/*
-import 'package:flutter/material.dart';
-import 'package:flutter_application/models/meal_model.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../models/calorie_model.dart';
-import '../repositories/Calories_repository.dart';
-
-class CalorieScreen extends StatefulWidget {
-  const CalorieScreen({super.key});
-
-  @override
-  _CalorieScreenState createState() => _CalorieScreenState();
-}
-
-class _CalorieScreenState extends State<CalorieScreen> {
-  final CalorieRepository _repository = CalorieRepository();
-  late Future<CalorieData> _calorieDataFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _calorieDataFuture = _repository.getTodayCalorieData();
-  }
-
-  // Refresh data after adding a new meal
-  void _refreshData() {
-    setState(() {
-      _calorieDataFuture = _repository.getTodayCalorieData();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        leading: const SizedBox.shrink(),
-        title: const Text(
-          'Calories',
-          style: TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Colors.green,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.grey[100],
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: FutureBuilder<CalorieData>(
-          future: _calorieDataFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('No data available'));
-            }
-
-            final calorieData = snapshot.data!;
-            return RefreshIndicator(
-              onRefresh: () async {
-                _refreshData();
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SafeArea(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeader(calorieData),
-                    _buildCalorieCard(calorieData),
-                    _buildMealsList(calorieData),
-                    SizedBox(height: 80), // Space for bottom navigation
+                    _buildHeader(),
+                    _buildCalorieDashboard(),
+                    _buildMealList(),
                   ],
                 ),
               ),
-            );
-          },
-        ),
-      ),
-      // No bottom navigation bar here, it's handled by MainNavigationScreen
     );
   }
 
-  Widget _buildHeader(CalorieData data) {
+  Widget _buildHeader() {
+    String today = DateFormat('EEEE, d MMM').format(DateTime.now());
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.all(16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profie.png'),
-                radius: 24,
+                radius: 20,
+                backgroundColor: Colors.grey[300],
+                child: Icon(Icons.person, color: Colors.grey[600]),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    data.username,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    'Hi $userName',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
-                    data.date,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    'Today, ${DateFormat('d MMM').format(DateTime.now())}',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ),
             ],
           ),
           IconButton(
-            icon: Icon(Icons.notifications_outlined),
+            icon: const Icon(Icons.notifications_outlined),
             onPressed: () {},
           ),
         ],
@@ -705,331 +197,179 @@ class _CalorieScreenState extends State<CalorieScreen> {
     );
   }
 
-  Widget _buildCalorieCard(CalorieData data) {
-    // Your original implementation
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFF2E6930),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  'My Calories',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Icon(Icons.emoji_food_beverage, color: Colors.amber),
-              ],
+  Widget _buildCalorieDashboard() {
+    int caloriesLeft = calorieGoal - totalCalories;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2E7D32), // Dark green color
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'My Calories 🥑',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            SizedBox(height: 20),
-            CircularPercentIndicator(
-              radius: 80.0,
-              lineWidth: 15.0,
-              percent:
-                  data.caloriePercentage > 1.0 ? 1.0 : data.caloriePercentage,
-              center: Column(
-                mainAxisSize: MainAxisSize.min,
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: SizedBox(
+              height: 180,
+              width: 180,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  Text(
-                    '${data.totalCalories}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 26.0,
-                      color: Colors.white,
+                  SizedBox(
+                    height: 180,
+                    width: 180,
+                    child: CircularProgressIndicator(
+                      value: caloriePercentage.clamp(0.0, 1.0),
+                      strokeWidth: 12,
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.yellow,
+                      ),
                     ),
                   ),
-                  Text(
-                    'KCAL',
-                    style: TextStyle(color: Colors.green[300], fontSize: 14.0),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$caloriesLeft', //how many colories left to achive your calorie goal
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Text(
+                        'KCAL',
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              progressColor: Colors.amber,
-              backgroundColor: Colors.green.withOpacity(0.3),
-              circularStrokeCap: CircularStrokeCap.round,
             ),
-            SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMealsList(CalorieData data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Meals today',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Navigate to the recipes screen when "All" is clicked
-                  Navigator.pushNamed(context, '/recipes').then((_) {
-                    // Refresh data when returning from recipes screen
-                    _refreshData();
-                  });
-                },
-                child: Text('All'),
-                style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
-              ),
-            ],
           ),
-        ),
-        ...data.meals.map((meal) => _buildMealItem(meal)).toList(),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildMealItem(Meal meal) {
-    return Dismissible(
-      key: Key(meal.id),
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
-        child: Icon(Icons.delete, color: Colors.white),
+  Widget _buildMealList() {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Meals today',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'All',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child:
+                meals.isEmpty
+                    ? Center(
+                      child: Text(
+                        'No meals planned for today',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                    )
+                    : ListView.separated(
+                      itemCount: meals.length,
+                      separatorBuilder:
+                          (context, index) =>
+                              Divider(height: 1, color: Colors.grey[300]),
+                      itemBuilder: (context, index) {
+                        return _buildMealItem(meals[index]);
+                      },
+                    ),
+          ),
+        ],
       ),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        // Remove meal when swiped
-        _repository.removeMeal(meal.id).then((_) => _refreshData());
+    );
+  }
+
+  Widget _buildMealItem(MealItem meal) {
+    return InkWell(
+      onTap: () {
+        // Navigate to meal details screen if needed
       },
       child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: ListTile(
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[200],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                meal.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.fastfood, size: 24, color: Colors.amber);
-                },
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey[200],
               ),
+              child:
+                  meal.imageUrl.isNotEmpty
+                      ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          meal.imageUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return _getMealIcon(meal.type);
+                          },
+                        ),
+                      )
+                      : _getMealIcon(meal.type),
             ),
-          ),
-          title: Text(meal.name, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Row(
-            children: [
-              Text(meal.type, style: TextStyle(color: Colors.grey[600])),
-              SizedBox(width: 10),
-              Text(
-                '${meal.calories} Kcal',
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          trailing: Icon(Icons.chevron_right),
-          onTap: () {
-            // Navigate to meal details if needed
-          },
-        ),
-      ),
-    );
-  }
-}
-
-
-*/
-
-
-
-
-
-
-
-import 'package:flutter/material.dart';
-import 'package:flutter_application/models/meal_model.dart';
-import 'package:flutter_application/screens/profil_screen.dart';
-import 'package:flutter_application/screens/recipe_screen.dart';
-import 'package:flutter_application/screens/water_tracker_screen.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
-import '../models/calorie_model.dart';
-import '../repositories/Calories_repository.dart';
-
-
-class CalorieScreen extends StatefulWidget {
-  const CalorieScreen({super.key});
-
-  @override
-  _CalorieScreenState createState() => _CalorieScreenState();
-}
-
-class _CalorieScreenState extends State<CalorieScreen> {
-  final CalorieRepository _repository = CalorieRepository();
-  late Future<CalorieData> _calorieDataFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _calorieDataFuture = _repository.getTodayCalorieData();
-  }
-
-  // Refresh data after adding a new meal
-  void _refreshData() {
-    setState(() {
-      _calorieDataFuture = _repository.getTodayCalorieData();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: SafeArea(
-        child: FutureBuilder<CalorieData>(
-          future: _calorieDataFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('No data available'));
-            }
-
-            final calorieData = snapshot.data!;
-            return SingleChildScrollView(
+            const SizedBox(width: 16),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeader(calorieData),
-                  _buildCalorieCard(calorieData),
-                  _buildMealsList(calorieData),
-                  SizedBox(height: 80), // Space for bottom navigation
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-     
-    );
-  }
-
-  Widget _buildHeader(CalorieData data) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profil.png'),
-                radius: 24,
-              ),
-              SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
                   Text(
-                    data.username,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    data.date,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          IconButton(
-            icon: Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCalorieCard(CalorieData data) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFF2E6930),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  'My Calories',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Icon(Icons.emoji_food_beverage, color: Colors.amber),
-              ],
-            ),
-            SizedBox(height: 20),
-            CircularPercentIndicator(
-              radius: 80.0,
-              lineWidth: 15.0,
-              percent:
-                  data.caloriePercentage > 1.0 ? 1.0 : data.caloriePercentage,
-              center: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${data.totalCalories}',
-                    style: TextStyle(
+                    meal.type,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 26.0,
-                      color: Colors.white,
+                      fontSize: 16,
                     ),
                   ),
                   Text(
-                    'KCAL',
-                    style: TextStyle(color: Colors.green[300], fontSize: 14.0),
+                    meal.name,
+                    style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                  ),
+                  Text(
+                    '${meal.calories} kcal',
+                    style: TextStyle(
+                      color: Colors.amber[700],
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
-              progressColor: Colors.amber,
-              backgroundColor: Colors.green.withOpacity(0.3),
-              circularStrokeCap: CircularStrokeCap.round,
             ),
-            SizedBox(height: 20),
-            Row(
-              // Keeping this row for future implementation
+            IconButton(
+              icon: const Icon(Icons.arrow_forward_ios, size: 16),
+              onPressed: () {
+                addToConsumedPlates(meal);
+              },
             ),
           ],
         ),
@@ -1037,101 +377,57 @@ class _CalorieScreenState extends State<CalorieScreen> {
     );
   }
 
-  Widget _buildMealsList(CalorieData data) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Meals today',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {
-                  // Navigate to the recipes screen when "All" is clicked
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RecipesScreen()),
-                  ).then((_) {
-                    // Refresh data when returning from recipes screen
-                    _refreshData();
-                  });
-                },
-                child: Text('All'),
-                style: TextButton.styleFrom(foregroundColor: Colors.grey[600]),
-              ),
-            ],
-          ),
-        ),
-        ...data.meals.map((meal) => _buildMealItem(meal)).toList(),
-      ],
+  Widget _getMealIcon(String mealType) {
+    IconData iconData;
+    Color iconColor;
+
+    switch (mealType.toLowerCase()) {
+      case 'breakfast':
+        iconData = Icons.breakfast_dining;
+        iconColor = Colors.amber;
+        break;
+      case 'lunch':
+        iconData = Icons.lunch_dining;
+        iconColor = Colors.orange;
+        break;
+      case 'dinner':
+        iconData = Icons.dinner_dining;
+        iconColor = Colors.red;
+        break;
+      default:
+        iconData = Icons.fastfood;
+        iconColor = Colors.brown;
+    }
+
+    return Center(child: Icon(iconData, size: 32, color: iconColor));
+  }
+}
+
+class MealItem {
+  final String id;
+  final String type;
+  final String name;
+  final int calories;
+  final String imageUrl;
+  final String timestamp;
+
+  MealItem({
+    required this.id,
+    required this.type,
+    required this.name,
+    required this.calories,
+    required this.imageUrl,
+    required this.timestamp,
+  });
+
+  factory MealItem.fromJson(Map<String, dynamic> json) {
+    return MealItem(
+      id: json['id'] ?? '',
+      type: json['type'] ?? '',
+      name: json['name'] ?? '',
+      calories: json['calories'] ?? 0,
+      imageUrl: json['imageUrl'] ?? '',
+      timestamp: json['timestamp'] ?? '',
     );
   }
-
-  Widget _buildMealItem(Meal meal) {
-    return Dismissible(
-      key: Key(meal.id),
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: EdgeInsets.only(right: 20),
-        child: Icon(Icons.delete, color: Colors.white),
-      ),
-      direction: DismissDirection.endToStart,
-      onDismissed: (direction) {
-        // Remove meal when swiped
-        _repository.removeMeal(meal.id).then((_) => _refreshData());
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: ListTile(
-          leading: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.grey[200],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                meal.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.fastfood, size: 24, color: Colors.amber);
-                },
-              ),
-            ),
-          ),
-          title: Text(meal.name, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Row(
-            children: [
-              Text(meal.type, style: TextStyle(color: Colors.grey[600])),
-              SizedBox(width: 10),
-              Text(
-                '${meal.calories} Kcal',
-                style: TextStyle(
-                  color: Colors.amber,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          trailing: Icon(Icons.chevron_right),
-          onTap: () {
-            // Navigate to meal details if needed
-          },
-        ),
-      ),
-    );
-  }
-
 }

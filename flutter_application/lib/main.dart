@@ -138,6 +138,8 @@ class MyApp extends StatelessWidget {
 }
 */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/providers/user_provider.dart';
 import 'package:flutter_application/services/auth_service.dart';
@@ -146,6 +148,7 @@ import 'package:flutter_application/utils/routes.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+   HttpOverrides.global = MyHttpOverrides();
   runApp(
     MultiProvider(
       providers: [
@@ -199,5 +202,15 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.login,
       onGenerateRoute: AppRouter.generateRoute,
     );
+  }
+}
+
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

@@ -574,6 +574,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
 import 'package:flutter/material.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
 import 'package:flutter_application/screens/dashboard_screen.dart';
+import 'package:flutter_application/screens/favorites_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
 import 'package:flutter_application/screens/water_tracker_screen.dart';
 import 'package:flutter_application/screens/recipe_screen.dart';
@@ -599,6 +600,7 @@ class AppRoutes {
   static const String recipeDetails = '/recipe-details';
   static const String chatbot = '/chatbot';
   static const String addPlat = '/addPlat';
+  static const String favorites = '/favorites';
 }
 
 class AppRouter {
@@ -640,7 +642,7 @@ class AppRouter {
       // Standalone screens (no bottom navigation)
       case AppRoutes.notification:
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
-/*
+      /*
       case AppRoutes.addPlat:
         return MaterialPageRoute(builder: (_) =>const  AddPlatScreen(userId: userId));
 */
@@ -661,6 +663,8 @@ class AppRouter {
           builder: (_) => RecipeDetailsScreen(recipe: recipe),
         );
 
+      case AppRoutes.favorites:
+        return MaterialPageRoute(builder: (_) => const FavoritesScreen());
       default:
         return MaterialPageRoute(
           builder:
@@ -762,6 +766,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
     CalorieScreen(userId: widget.userId),
     WaterTrackerScreen(),
     ProfileScreen(),
+    FavoritesScreen(),
     /*DashboardScreen(userId: widget.userId),
     CalorieScreen(userId: widget.userId),
     WaterTrackerScreen(userId: widget.userId),
@@ -790,6 +795,9 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
       case 3:
         route = AppRoutes.profile;
         break;
+      case 4:
+        route = AppRoutes.favorites;
+        
       default:
         route = AppRoutes.dashboard;
     }
@@ -859,7 +867,6 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
         BottomNavigationBarItem(icon: Icon(Icons.water_drop), label: 'Water'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
-
       ],
       onTap: _onItemTapped,
     );

@@ -558,6 +558,8 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.favorite,
                     press: () {
                       // Navigate to favorites page
+                      Navigator.pushNamed(context, '/favorites');
+
                     },
                   ),
                   const SizedBox(height: 12),

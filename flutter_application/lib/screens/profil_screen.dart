@@ -546,7 +546,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   ProfileMenu(
-                    text: "Objective",
+                    text: "Targets",
                     icon: Icons.flag,
                     press: () {
                       // Navigate to objectives page
@@ -562,8 +562,8 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   ProfileMenu(
-                    text: "Historique",
-                    icon: Icons.settings,
+                    text: "Food Diary",
+                    icon: Icons.fastfood,
                     press: () {
                       // Navigate to settings page
                     },

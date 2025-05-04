@@ -55,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               _buildWeightChart(),
               _buildCalorieChart(),
               _buildNutrientCards(),
-              _buildWaterIntakeCard(),
+              //_buildWaterIntakeCard(),
               SizedBox(height: 80), // Space for bottom navigation
             ],
           ),
@@ -460,6 +460,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  /*
+  // Water intake card
   Widget _buildWaterIntakeCard() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -523,7 +525,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
     );
-  }
+  }*/
   }
 
 

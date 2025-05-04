@@ -446,7 +446,6 @@ class ProfileMenu extends StatelessWidget {
 }
 */
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application/main.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
@@ -559,7 +558,6 @@ class ProfileScreen extends StatelessWidget {
                     press: () {
                       // Navigate to favorites page
                       Navigator.pushNamed(context, '/favorites');
-
                     },
                   ),
                   const SizedBox(height: 12),
@@ -568,9 +566,10 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.fastfood,
                     press: () {
                       // Navigate to settings page
+                      Navigator.pushNamed(context, '/consumed');
                     },
                   ),
-                  
+
                   const SizedBox(height: 24),
 
                   // Logout button
@@ -822,8 +821,10 @@ class ProfilePic extends StatelessWidget {
     String profileImagePath = 'assets/images/profile.png'; // Default image
 
     if (user != null && user.sexe != null) {
-      if (user.sexe != null && (user.sexe!.toLowerCase() == 'female' ||
-          user.sexe!.toLowerCase() == 'f') || user.sexe!.toLowerCase() == 'F') {
+      if (user.sexe != null &&
+              (user.sexe!.toLowerCase() == 'female' ||
+                  user.sexe!.toLowerCase() == 'f') ||
+          user.sexe!.toLowerCase() == 'F') {
         profileImagePath = 'assets/images/profile_female.png';
       } else if (user.sexe != null &&
           (user.sexe!.toLowerCase() == 'male' ||
@@ -897,6 +898,7 @@ class ProfilePic extends StatelessWidget {
     );
   }
 }
+
 class ProfileMenu extends StatelessWidget {
   const ProfileMenu({
     super.key,

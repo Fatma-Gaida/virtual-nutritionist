@@ -573,6 +573,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
 // utils/routes.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_application/screens/calorie_screen.dart';
+import 'package:flutter_application/screens/consumed_dishes_screen.dart';
 import 'package:flutter_application/screens/dashboard_screen.dart';
 import 'package:flutter_application/screens/favorites_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
@@ -601,6 +602,7 @@ class AppRoutes {
   static const String chatbot = '/chatbot';
   static const String addPlat = '/addPlat';
   static const String favorites = '/favorites';
+  static const String consumed = '/consumed';
 }
 
 class AppRouter {
@@ -665,6 +667,17 @@ class AppRouter {
 
       case AppRoutes.favorites:
         return MaterialPageRoute(builder: (_) => const FavoritesScreen());
+
+      case AppRoutes.consumed:
+        return MaterialPageRoute(
+          builder: (_) => ConsumedDishesScreen(userId: userId),
+        );
+  /*
+      case AppRoutes.consumed:
+        return MaterialPageRoute(
+          builder: (_) => RootNavigationPage(initialIndex: 5, userId: userId),
+        );
+      */
       default:
         return MaterialPageRoute(
           builder:
@@ -767,6 +780,7 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
     WaterTrackerScreen(),
     ProfileScreen(),
     FavoritesScreen(),
+    //ConsumedDishesScreen(userId: widget.userId),
     /*DashboardScreen(userId: widget.userId),
     CalorieScreen(userId: widget.userId),
     WaterTrackerScreen(userId: widget.userId),
@@ -797,7 +811,8 @@ class _RootNavigationPageState extends State<RootNavigationPage> {
         break;
       case 4:
         route = AppRoutes.favorites;
-        
+      case 5:
+        route = AppRoutes.consumed;
       default:
         route = AppRoutes.dashboard;
     }

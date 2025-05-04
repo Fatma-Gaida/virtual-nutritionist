@@ -8,7 +8,7 @@ public class PlatsConsommes extends Recipe {
     
     private String userId;
     private LocalDateTime dateConsommation;
-    private String meal; // "Petit-déjeuner", "Déjeuner", "Dîner", "Snacks"
+    private String meal; // "Lunch", "Breakfast", "Dinner"
     
     // Constructeurs
     public PlatsConsommes() {

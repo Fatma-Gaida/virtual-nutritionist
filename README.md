@@ -20,30 +20,101 @@ This project consists of two main components:
 ## Directory Structure
 
 ```
-├── Backend (Spring Boot)
-│   ├── src/main/java/com/example/pfa2/
-│   │   ├── controllers/
-│   │   │   └── ApiController.java
-│   │   ├── models/
-│   │   │   ├── DashboardQuotidien.java
-│   │   │   ├── DailyPlan.java
-│   │   │   ├── Ingredient.java
-│   │   │   ├── PlatsConsommes.java
-│   │   │   ├── PlatsFavoris.java
-│   │   │   ├── Recipe.java
-│   │   │   └── User.java
-│   │   └── repository/
-│   │       ├── RecipeRepository.java
-│   │       └── UserRepository.java
-│   ├── Configuration Files
-│   │   ├── pom.xml
-│   │   ├── mvnw
-│   │   ├── mvnw.cmd
-│   │   └── .gitattributes
+├── backend (Spring Boot)
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/example/pfa2/
+│   │   │   │   ├── controllers/
+│   │   │   │   │   └── ApiController.java
+│   │   │   │   │   └── AuthController.java
+│   │   │   │   │   └── DailyPlanController.java
+│   │   │   │   │   └── DashboardQuotidienController.java
+│   │   │   │   │   └── PlatsConsommesController.java
+│   │   │   │   │   └── PlatsFavorisController.java
+│   │   │   │   │   └── RecipeController.java
+│   │   │   │   │   └── UserController.java
+│   │   │   │   └── UserTestController.java
+│   │   │   │   ├── dto/
+│   │   │   │   │   └── ConsumedPlatesRequest.java
+│   │   │   │   ├── models/
+│   │   │   │   │   ├── DashboardQuotidien.java
+│   │   │   │   │   ├── DailyPlan.java
+│   │   │   │   │   ├── Ingredient.java
+│   │   │   │   │   ├── PlatsConsommes.java
+│   │   │   │   │   ├── PlatsFavoris.java
+│   │   │   │   │   ├── Recipe.java
+│   │   │   │   │   └── User.java
+│   │   │   │   └── repository/
+│   │   │   │   │    ├── RecipeRepository.java
+│   │   │   │   │    └── DashboardQuotidienRepository.java
+│   │   │   │   │    └── PlatsConsommesRepository.java
+│   │   │   │   │    └── PlatsFavorisRepository.java
+│   │   │   │   │    └── RecipeRepository.java
+│   │   │   │   │    └── UserRepository.java
+│   │   │   │   │── services/
+│   │   │   │   │    ├── RecipeService.java
+│   │   │   │   │    └── DashboardQuotidienService.java
+│   │   │   │   │    └── PlatsConsommesService.java
+│   │   │   │   │    └── PlatsFavorisService.java
+│   │   │   │   │    └── UserService.java
+│   │   │   │   │    └── DailyPlanService.java
+│   │   │   │   │    └── DashboardQuotidienService.java
+│   │   │   │   ├── config/
+│   │   │   │       └── SecurityConfig.java
+│   │   │   └── CorsFilter.java
+│   │   │   └── PFA2Application.java
+│   │   ├── test/java/com/example/pfa2
+│   │   │   └── PFA2ApplicationTests.java
+│   ├── target/
+
+├── pom.xml
+├── mvnw
+├── mvnw.cmd
+└── .gitignore
+└── .gitattributes
 │
-├── Frontend (Flutter)
+├── flutter_application (Frontend)
+│   ├── .dart_tool/
+│   ├── android/
+│   ├── ios/
+│   ├── linux/
+│   ├── windows/
+│   ├── macos/
+│   ├── web/
+│   ├── test/
+│   ├── build/
 │   ├── lib/
-│   │   └── main.dart
+│   │   └── blocs.dart
+│   │   │   └── user_bloc.java
+│   │   └── controllers.dart
+│   │   │   └── CalorieScreenController.java
+│   │   └── models.dart
+│   │   │   └── calorie_model.dart
+│   │   │   └── meal_model.dart
+│   │   │   └── recipe_model.dart
+│   │   │   └── user.dart
+│   │   └── providers.dart
+│   │   │   └── user_provider.dart
+│   │   └── repositories.dart
+│   │   │   └── calorie_repository.dart
+│   │   │   └── recipe_repository.dart
+│   │   │   └── user_repository.dart
+│   │   └── services.dart
+│   │   │   └── api_service.dart
+│   │   │   └── auth_service.dart
+│   │   │   └── register_service.dart
+│   │   │   └── calorie_api_service.dart
+│   │   │   └── PlatsConsommesService.dart
+│   │   └── utils.dart
+│   │   │   └── routes.dart
+│   │   └── screens.dart
+│   │   │   └── add_plat_screen.dart
+│   │   │   └── add_plat_screen.dart
+│   │   │   └── add_plat_screen.dart
+│   │   │   └── add_plat_screen.dart
+│   │   │   └── add_plat_screen.dart
+
+│   └── main.dart
 │   ├── assets/
 │   │   ├── images/
 │   │   │   ├── profil.png

@@ -315,5 +315,9 @@ const String apiUrl = 'http://localhost:8080/api';
 ## Contact
 
 Ghofrane Lakhal - [ghofranelakhal2002@gmail.com](mailto:your.email@example.com)
+Amine Bouabid - [aminebouabid2018@gmail.com](mailto:your.email@example.com)
+Fatma Zahra Gaida - [fatmagaida52@gmail.com](mailto:your.email@example.com)
+Ines Abdellaoui - [inesabdellaoui111@gmail.com](mailto:your.email@example.com)
+
 
 Project Link: [https://github.com/Fatma-Gaida/virtual-nutritionist.git](https://github.com/yourusername/recipe-calorie-tracker)

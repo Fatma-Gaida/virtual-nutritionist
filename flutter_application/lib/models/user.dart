@@ -97,23 +97,3 @@ class User {
   }
  
 }
-
-
-/*
-class IdU {
-  final int timestamp;
-  final DateTime? date;
-
-  IdU({required this.timestamp, required this.date});
-
-  factory IdU.fromJson(Map<String, dynamic> json) {
-    return IdU(timestamp: json['timestamp'], date: json['date'] != null ? DateTime.parse(json['date']) : null,
-    );
-  }
-
-  @override
-  String toString() {
-    return timestamp.toString();
-  }
-}
-*/

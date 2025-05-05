@@ -33,7 +33,8 @@ This project consists of two main components:
 │   │   │   │   │   └── PlatsFavorisController.java
 │   │   │   │   │   └── RecipeController.java
 │   │   │   │   │   └── UserController.java
-│   │   │   │   └── UserTestController.java
+│   │   │   │   │   └── UserTestController.java
+│   │   │   │   │   └── ObjectifController.java
 │   │   │   │   ├── dto/
 │   │   │   │   │   └── ConsumedPlatesRequest.java
 │   │   │   │   ├── models/
@@ -43,6 +44,7 @@ This project consists of two main components:
 │   │   │   │   │   ├── PlatsConsommes.java
 │   │   │   │   │   ├── PlatsFavoris.java
 │   │   │   │   │   ├── Recipe.java
+│   │   │   │   │   ├── Objectif.java
 │   │   │   │   │   └── User.java
 │   │   │   │   └── repository/
 │   │   │   │   │    ├── RecipeRepository.java
@@ -51,16 +53,16 @@ This project consists of two main components:
 │   │   │   │   │    └── PlatsFavorisRepository.java
 │   │   │   │   │    └── RecipeRepository.java
 │   │   │   │   │    └── UserRepository.java
+│   │   │   │   │    └── ObjectifRepository.java
 │   │   │   │   │── services/
 │   │   │   │   │    ├── RecipeService.java
 │   │   │   │   │    └── DashboardQuotidienService.java
 │   │   │   │   │    └── PlatsConsommesService.java
 │   │   │   │   │    └── PlatsFavorisService.java
 │   │   │   │   │    └── UserService.java
+│   │   │   │   │    └── ObjectifService.java
 │   │   │   │   │    └── DailyPlanService.java
 │   │   │   │   │    └── DashboardQuotidienService.java
-│   │   │   │   ├── config/
-│   │   │   │       └── SecurityConfig.java
 │   │   │   └── CorsFilter.java
 │   │   │   └── PFA2Application.java
 │   │   ├── test/java/com/example/pfa2

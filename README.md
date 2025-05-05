@@ -217,7 +217,7 @@ dart --version
 
 1. Navigate to the project root:
 ```bash
-cd path/to/project
+cd virtual-nutritionist/backend
 ```
 
 2. Compile the source code:
@@ -236,16 +236,22 @@ spring.data.mongodb.uri=mongodb://localhost:27017/pfa2
 ```
 
 4. Run the application:
-```bash
-java -jar target/pfa2-0.0.1-SNAPSHOT.jar
-```
-The API will be available at http://localhost:8080 (default port).
+### Backend
 
+1. Navigate to the Flutter project root:
+```bash
+cd virtual-nutritionist
+```
+
+2. Run the backend server:
+```bash
+mvnw.cmd spring-boot:run
+```
 ### Frontend
 
 1. Navigate to the Flutter project root:
 ```bash
-cd path/to/project
+cd ../flutter_application
 ```
 
 2. Get dependencies:
@@ -297,6 +303,6 @@ const String apiUrl = 'http://localhost:8080/api';
 
 ## Contact
 
-Your Name - [your.email@example.com](mailto:your.email@example.com)
+Ghofrane Lakhal - [ghofranelakhal2002@gmail.com](mailto:your.email@example.com)
 
-Project Link: [https://github.com/yourusername/recipe-calorie-tracker](https://github.com/yourusername/recipe-calorie-tracker)
+Project Link: [https://github.com/Fatma-Gaida/virtual-nutritionist.git](https://github.com/yourusername/recipe-calorie-tracker)

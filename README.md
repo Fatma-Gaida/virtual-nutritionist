@@ -109,11 +109,22 @@ This project consists of two main components:
 │   │   │   └── routes.dart
 │   │   └── screens.dart
 │   │   │   └── add_plat_screen.dart
-│   │   │   └── add_plat_screen.dart
-│   │   │   └── add_plat_screen.dart
-│   │   │   └── add_plat_screen.dart
-│   │   │   └── add_plat_screen.dart
-
+│   │   │   └── calorie_screen.dart
+│   │   │   └── CalorieScreenGetX.dart
+│   │   │   └── chatbot_screen.dart
+│   │   │   └── consumed_dishes_screen
+│   │   │   └── dashboard_screen
+│   │   │   └── favorites_screen
+│   │   │   └── login_screen
+│   │   │   └── notifications_screen.dart
+│   │   │   └── profil_screen.dart
+│   │   │   └── recipe_details_screen
+│   │   │   └── recipe_screen.dart
+│   │   │   └── register_screen.dart
+│   │   │   └── user_details_screen.dart
+│   │   │   └── water_history_screen.dart
+│   │   │   └── water_settings_screen.dart
+│   │   │   └── water_tracker_screen.dart
 │   └── main.dart
 │   ├── assets/
 │   │   ├── images/

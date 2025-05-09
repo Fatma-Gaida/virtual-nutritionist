@@ -10,11 +10,32 @@ class RegisterService {
  RegisterService(this._apiService,this._authService);
 
   // Create account method
-  Future<User> createAccount(User user) async {
+/*  Future<User> createAccount(User user) async {
     try {
-      final response = await _apiService.post('/users/register', user.toRegistrationJson());
+      final response = await _apiService.post('/users/creer-compte', user.toRegistrationJson());
 
       if (response.statusCode == 201) {
+        final createdUser = User.fromJson(response.data);
+        await _authService.saveUserCredentials(createdUser);
+        return createdUser;
+      } else {
+        throw Exception('->: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Registration error: ${e.toString()}');
+    }
+  }
+*/
+  
+  Future<User> createAccount(User user) async {
+    try {
+      final response = await _apiService.post(
+        '/users/creer-compte',
+        user.toRegistrationJson(),
+      );
+
+      // Modified to accept both 200 and 201 as success
+      if (response.statusCode == 201 || response.statusCode == 200) {
         final createdUser = User.fromJson(response.data);
         await _authService.saveUserCredentials(createdUser);
         return createdUser;
@@ -22,10 +43,13 @@ class RegisterService {
         throw Exception('Registration failed: ${response.statusCode}');
       }
     } catch (e) {
+      print('Registration error details: $e');
       throw Exception('Registration error: ${e.toString()}');
     }
   }
 
+  
+  
   // Save user details to the backend
   Future<User> saveUserDetails({
     required String gender,

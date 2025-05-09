@@ -101,6 +101,7 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.flag,
                     press: () {
                       // Navigate to objectives page
+                      Navigator.pushNamed(context, '/targets');
                     },
                   ),
                   const SizedBox(height: 12),

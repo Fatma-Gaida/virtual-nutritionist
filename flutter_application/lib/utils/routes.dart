@@ -4,6 +4,7 @@ import 'package:flutter_application/screens/consumed_dishes_screen.dart';
 import 'package:flutter_application/screens/dashboard_screen.dart';
 import 'package:flutter_application/screens/favorites_screen.dart';
 import 'package:flutter_application/screens/profil_screen.dart';
+import 'package:flutter_application/screens/targets_screen.dart';
 import 'package:flutter_application/screens/water_tracker_screen.dart';
 import 'package:flutter_application/screens/recipe_screen.dart';
 import 'package:flutter_application/screens/notifications_screen.dart';
@@ -30,6 +31,7 @@ class AppRoutes {
   static const String addPlat = '/addPlat';
   static const String favorites = '/favorites';
   static const String consumed = '/consumed';
+  static const String targets = '/targets';
 }
 
 class AppRouter {
@@ -99,12 +101,17 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => ConsumedDishesScreen(userId: userId),
         );
-  /*
+      /*
       case AppRoutes.consumed:
         return MaterialPageRoute(
           builder: (_) => RootNavigationPage(initialIndex: 5, userId: userId),
         );
       */
+
+      case AppRoutes.targets:
+        return MaterialPageRoute(
+          builder: (_) => TargetsScreen(userId: userId),
+        );
       default:
         return MaterialPageRoute(
           builder:

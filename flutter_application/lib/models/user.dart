@@ -11,10 +11,15 @@ class User {
   final List<String> maladies;
   final String? etatActivite;
   final String? dashBoardQuotidienId;
-  final List<String> notificationIds;
-  final List<String> objectifIds;
-  final List<String> platFavoriIds;
-  final int calorieGoal;
+  final List<String>? notificationIds;
+  final List<String>? objectifIds;
+  final List<String>? platFavoriIds;
+  final int? calorieGoal;
+  //final String? dashBoardQuotidienId;
+
+
+
+
 
   User({
     required this.id,
@@ -32,7 +37,7 @@ class User {
     this.notificationIds = const [],
     this.objectifIds = const [],
     this.platFavoriIds = const [],
-    this.calorieGoal = 2000,
+    this.calorieGoal,
 
   
 
@@ -42,6 +47,14 @@ class User {
       'nom': nom,
       'email': email,
       'motDePasse': motDePasse,
+      'dob': dob?.toIso8601String(),
+      'sexe': sexe,
+      'taille': taille,
+      'poids': poids,
+      'allergies': allergies,
+      'maladies': maladies,
+      'etatActivite': etatActivite,
+      'calorieGoal': calorieGoal,
     };
   }
 
@@ -67,7 +80,7 @@ class User {
       notificationIds: List<String>.from(json['notificationIds']),
       objectifIds: List<String>.from(json['objectifIds']),
       platFavoriIds: List<String>.from(json['platFavoriIds']),
-      calorieGoal: json['calorieGoal'] != null ? json['calorieGoal'] : 2000,
+      calorieGoal: json['calorieGoal'] ?? 2000,
     );
   }
 
@@ -81,7 +94,7 @@ class User {
       'nom': nom,
       'email': email,
       'motDePasse': motDePasse,
-      'dob': dob/*?.toIso8601String()*/,
+      'dob': dob?.toIso8601String(),
       'sexe': sexe,
       'taille': taille,
       'poids': poids,

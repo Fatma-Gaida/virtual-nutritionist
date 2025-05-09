@@ -26,17 +26,22 @@ class WaterHistoryScreen extends StatefulWidget {
 class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
   @override
   Widget build(BuildContext context) {
+    // Define color scheme to match nutrition app - same as in WaterTrackerScreen
+    final primaryGreen = Color(0xFF4CAF50);
+    final darkGreen = Color(0xFF388E3C);
+    final lightBlue = Color(0xFF81D4FA); // Light blue for water
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.green[800],
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'registres de boissons à l\'eau',
+          'Water History',
           style: TextStyle(color: Colors.white),
         ),
         actions: [
@@ -54,12 +59,12 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
       ),
       body:
           widget.intakeHistory.isEmpty
-              ? _buildEmptyState()
-              : _buildHistoryList(),
+              ? _buildEmptyState(lightBlue)
+              : _buildHistoryList(primaryGreen, darkGreen, lightBlue),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(Color waterColor) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -67,24 +72,28 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
           Icon(
             Icons.water_drop_outlined,
             size: 80,
-            color: Colors.blue.withOpacity(0.5),
+            color: waterColor.withOpacity(0.7),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Aucune consommation d\'eau enregistrée',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+          Text(
+            'No water intake recorded',
+            style: TextStyle(color: Colors.grey[800], fontSize: 16),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Ajoutez de l\'eau depuis l\'écran principal',
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+          Text(
+            'Add water from the main screen',
+            style: TextStyle(color: Colors.grey[600], fontSize: 14),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHistoryList() {
+  Widget _buildHistoryList(
+    Color primaryGreen,
+    Color darkGreen,
+    Color waterColor,
+  ) {
     // Calculate total water consumption for the day
     final today = DateTime.now();
     final todayIntake = widget.intakeHistory
@@ -96,32 +105,32 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
         // Today's summary
         Container(
           padding: const EdgeInsets.all(16),
-          color: Colors.blue.withOpacity(0.1),
+          color: waterColor.withOpacity(0.2),
           child: Row(
             children: [
-              const Icon(Icons.calendar_today, color: Colors.blue),
+              Icon(Icons.calendar_today, color: primaryGreen),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Aujourd\'hui',
+                  Text(
+                    'Today',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
                     '${_formatDate(today)}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
                   ),
                 ],
               ),
               const Spacer(),
               Text(
                 '$todayIntake ml',
-                style: const TextStyle(
-                  color: Colors.blue,
+                style: TextStyle(
+                  color: primaryGreen,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
@@ -144,14 +153,14 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                 onDismissed: (_) {
                   widget.onRemoveIntake(index);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Enregistrement supprimé'),
-                      backgroundColor: Colors.red,
+                    SnackBar(
+                      content: const Text('Record deleted'),
+                      backgroundColor: darkGreen,
                     ),
                   );
                 },
                 background: Container(
-                  color: Colors.red,
+                  color: Colors.red[400],
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(right: 20),
                   child: const Icon(Icons.delete, color: Colors.white),
@@ -166,30 +175,30 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                     ),
                   ),
                   child: ListTile(
-                    leading: _buildGlassIcon(intake.amount),
+                    leading: _buildGlassIcon(intake.amount, waterColor),
                     title: Text(
                       '${intake.amount} ml',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Colors.grey[800],
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     subtitle: Text(
-                      'Le $date',
-                      style: TextStyle(color: Colors.grey),
+                      'On $date',
+                      style: TextStyle(color: Colors.grey[600]),
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           '$hour:$minute',
-                          style: const TextStyle(color: Colors.white70),
+                          style: TextStyle(color: Colors.grey[700]),
                         ),
                         const SizedBox(width: 12),
                         IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.delete_outline,
-                            color: Colors.red,
+                            color: Colors.red[400],
                           ),
                           onPressed: () => widget.onRemoveIntake(index),
                         ),
@@ -205,7 +214,7 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
     );
   }
 
-  Widget _buildGlassIcon(int amount) {
+  Widget _buildGlassIcon(int amount, Color waterColor) {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -214,9 +223,9 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
           width: 32,
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.white10,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: Colors.white30, width: 1),
+            border: Border.all(color: Colors.blue, width: 1),
           ),
         ),
         // Water in glass
@@ -224,7 +233,7 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
           width: 32,
           height: 40 * 0.75, // Assuming each glass shows 75% full
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.5),
+            color: waterColor.withOpacity(0.7),
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(5),
               bottomRight: Radius.circular(5),
@@ -236,18 +245,20 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
   }
 
   void _showClearConfirmationDialog() {
+    final primaryGreen = Color(0xFF4CAF50);
+
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Effacer tout l\'historique'),
+            title: Text('Clear History', style: TextStyle(color: primaryGreen)),
             content: const Text(
-              'Êtes-vous sûr de vouloir effacer tous les enregistrements? Cette action ne peut pas être annulée.',
+              'Are you sure you want to clear all history records? This action cannot be undone.',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Annuler'),
+                child: Text('Cancel', style: TextStyle(color: Colors.grey)),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -256,10 +267,9 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
                     widget.onRemoveIntake(i);
                   }
                   Navigator.pop(context);
-                  Navigator.pop(context); // Return to the main screen
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Effacer'),
+                style: ElevatedButton.styleFrom(backgroundColor: primaryGreen),
+                child: const Text('Clear'),
               ),
             ],
           ),
@@ -268,18 +278,18 @@ class _WaterHistoryScreenState extends State<WaterHistoryScreen> {
 
   String _formatDate(DateTime date) {
     final months = [
-      'jan',
-      'fév',
-      'mar',
-      'avr',
-      'mai',
-      'juin',
-      'juil',
-      'août',
-      'sep',
-      'oct',
-      'nov',
-      'déc',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }

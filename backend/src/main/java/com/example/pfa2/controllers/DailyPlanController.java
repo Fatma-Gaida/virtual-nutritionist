@@ -103,6 +103,7 @@ public ResponseEntity<?> getDailyPlan(
 
     // Get daily plan for the user and date
     try {
+        System.out.println(date);
         DailyPlan dailyPlan = dailyPlanService.getDailyPlanForUser(userId, date);
         
         // Convert to response format

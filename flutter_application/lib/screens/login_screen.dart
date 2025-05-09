@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Icon(Icons.local_dining, size: 80, color: Colors.green[700]),
               const SizedBox(height: 16),
               Text(
-                'Your Virtual Nutritionist',
+                'NutriVibe',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 32,
